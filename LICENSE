@@ -1,0 +1,60 @@
+# Gamet Studios CMSS — Source-Available License (v1.0)
+
+Copyright (c) 2026 Gamet Studios – Pieter Mooldijk (`contact@gametstudios.media`)  
+All Rights Reserved. / Alle Rechte vorbehalten.
+
+---
+
+## DEUTSCHE FASSUNG (Maßgebliche Bedingungen)
+
+Diese Software („Gamet Studios CMSS“ bzw. „die Software“) ist **Source-Available** (der Quellcode ist einsehbar), jedoch **keine Open-Source-Software** im Sinne von MIT, Apache oder GPL. Mit dem Herunterladen, Kopieren, Installieren oder Betreiben der Software erklären Sie sich mit den folgenden Bedingungen einverstanden:
+
+### 1. Erlaubte Nutzung
+Ihnen wird ein einfaches, widerrufliches, nicht übertragbares und nicht unterlizenzierbares Recht eingeräumt, die Software auf einem eigenen Webserver oder Webhosting für **private, nicht-kommerzielle oder ausdrücklich von Gamet Studios freigegebene Projekte** zu betreiben. Sie dürfen eigene Inhalte (`data/`), eigene Medien (`assets/images/`, `assets/icons/`) sowie eigene Inhaltsseiten (`de/`, `en/`) frei erstellen und pflegen.
+
+### 2. Verbotene Handlungen (Kein Eingriff in den Kern & kein Missbrauch)
+Ohne vorherige schriftliche Genehmigung durch Gamet Studios ist es **ausdrücklich untersagt**:
+1. **Veränderung des Systemkerns:** Dateien des CMSS-Systemkerns (`cms/`, `api/`, `includes/`, `assets/js/`, `assets/css/`, `tools/`, `admin/`) zu verändern, zu manipulieren, zu umgehen oder in abgeleiteter Form weiterzuverbreiten.
+2. **Umgehung von Schutzmechanismen:** Die Integritätsprüfung (`includes/integrity.php`, `GS_INTEGRITY_SEAL`), den stündlichen Lizenz-Heartbeat (`includes/telemetry.php`), die Remote-Deaktivierung oder den Core-Update-Schutz zu entfernen, zu blockieren, zu verfälschen oder zu deaktivieren.
+3. **Kommerzielle Nutzung & Weiterverkauf:** Die Software gegen Entgelt weiterzuverkaufen, zu vermieten, als eigene White-Label-Lösung oder als gehosteten Dienst (SaaS) Dritten anzubieten oder für kommerzielle Kundenprojekte einzusetzen.
+4. **Missbrauch:** Die Software für rechtswidrige Zwecke, Phishing, Spam, Malware-Verbreitung, Betrug, Urheberrechtsverletzungen oder sonstige missbräuchliche Inhalte zu nutzen.
+
+### 3. Telemetrie, Integritätsprüfung & Remote-Deaktivierung
+1. Jede betriebene Instanz übermittelt zur Lizenz-, Versions- und Integritätsprüfung einmal pro Stunde sowie bei explizitem Abgleich technische Betriebsdaten (`site_id`, Domain/URL, Markenname, CMSS-Version, PHP-Version, Server-IP) an den zentralen Lizenz-Server von Gamet Studios (`https://gametstudios.media/control/api.php`).
+2. Bei einem Verstoß gegen diese Lizenzbedingungen, bei Manipulation am geschützten Systemkern oder bei missbräuchlicher Nutzung der Software erlischt Ihr Nutzungsrecht automatisch mit sofortiger Wirkung. Gamet Studios ist in diesem Fall berechtigt, die betroffene Instanz technisch über den Remote-Notschalter zu deaktivieren.
+
+### 4. Gewährleistungs- und Haftungsausschluss
+DIE SOFTWARE WIRD „WIE BESEHEN“ („AS IS“) OHNE JEGLICHE AUSDRÜCKLICHE ODER STILLSCHWEIGENDE GEWÄHRLEISTUNG BEREITGESTELLT. IN KEINEM FALL HAFTET GAMET STUDIOS FÜR SCHÄDEN, DATENVERLUSTE ODER ENTGANGENEN GEWINN AUS DER NUTZUNG ODER NICHTNUTZBARKEIT DER SOFTWARE, SOWEIT GESETZLICH ZULÄSSIG.
+
+### 5. Anwendbares Recht
+Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts.
+
+---
+
+## ENGLISH VERSION
+
+This software ("Gamet Studios CMSS" or "the Software") is **Source-Available**, NOT Open Source (not MIT, Apache, or GPL). By downloading, copying, installing, or operating the Software, you agree to the following terms:
+
+### 1. Permitted Use
+You are granted a non-exclusive, revocable, non-transferable, non-sublicensable right to install and operate the Software on your own hosting/server for **personal, non-commercial, or explicitly Gamet Studios-approved projects**. You may freely create and edit your own content (`data/`), media (`assets/images/`, `assets/icons/`), and page shells (`de/`, `en/`).
+
+### 2. Prohibited Actions (No Core Modification & No Abuse)
+Without prior written permission from Gamet Studios, you are **strictly prohibited** from:
+1. **Modifying the Core:** Modifying, patching, bypassing, or redistributing modified versions of the CMSS core files (`cms/`, `api/`, `includes/`, `assets/js/`, `assets/css/`, `tools/`, `admin/`).
+2. **Bypassing Protections:** Removing, blocking, spoofing, or disabling the integrity check (`includes/integrity.php`, `GS_INTEGRITY_SEAL`), the hourly telemetry heartbeat (`includes/telemetry.php`), remote deactivation, or Core Update encryption.
+3. **Commercial Use & Resale:** Selling, renting, sublicensing, rebranding as your own product, offering as SaaS, or deploying for commercial client projects.
+4. **Abuse:** Using the Software for unlawful purposes, phishing, spam, malware distribution, fraud, copyright infringement, or abusive content.
+
+### 3. Telemetry, Integrity & Remote Deactivation
+1. Each active instance transmits technical status metadata (`site_id`, domain/URL, brand name, CMSS version, PHP version, server IP) once per hour and on explicit sync to Gamet Studios (`https://gametstudios.media/control/api.php`) to verify license and integrity status.
+2. Any violation of these terms, tampering with protected core files, or abusive operation immediately terminates your license. Gamet Studios reserves the right to remotely deactivate non-compliant or abusive instances at any time.
+
+### 4. Disclaimer of Warranty & Limitation of Liability
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY LAW, GAMET STUDIOS SHALL NOT BE LIABLE FOR ANY DAMAGES, DATA LOSS, OR LOSS OF PROFITS ARISING FROM THE USE OR INABILITY TO USE THE SOFTWARE.
+
+### 5. Governing Law
+This license is governed by the laws of the Federal Republic of Germany.
+
+---
+
+Kontakt / Licensing Inquiries: `contact@gametstudios.media`

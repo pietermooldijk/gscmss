@@ -1,0 +1,20 @@
+{
+    "items": [
+        {
+            "slug": "beispiel-projekt",
+            "title": "Sample Project",
+            "tagline": "A placeholder project.",
+            "tags": [
+                "Placeholder"
+            ],
+            "image": "",
+            "status": "Active",
+            "year": "2026",
+            "role": "Concept",
+            "website": "https:\/\/example.com",
+            "body": [
+                "Sample text inside GS CMSS Framework."
+            ]
+        }
+    ]
+}

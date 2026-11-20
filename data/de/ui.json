@@ -1,0 +1,30 @@
+{
+  "header": {
+    "primaryNav": "Hauptnavigation",
+    "mobileNav": "Mobile Navigation",
+    "menu": "Menü öffnen",
+    "close": "Schließen",
+    "switchLang": "Sprache wechseln",
+    "toggleTheme": "Hell/Dunkel-Modus wechseln"
+  },
+  "project": {
+    "more": "Mehr erfahren",
+    "status": "Status",
+    "year": "Jahr",
+    "role": "Rolle",
+    "website": "Website"
+  },
+  "member": {
+    "more": "Mehr erfahren"
+  },
+  "journal": {
+    "read": "Lesen",
+    "back": "Zurück zum Journal"
+  },
+  "form": {
+    "submit": "Senden",
+    "sending": "Wird gesendet…",
+    "success": "Danke! Wir melden uns bald.",
+    "error": "Fehler beim Senden. Bitte später erneut versuchen."
+  }
+}

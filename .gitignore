@@ -1,0 +1,20 @@
+# AI / interne Entwickler-Kontextdateien
+AI_CONTEXT.md
+
+# Masterserver-Control (niemals veröffentlichen)
+control/
+
+# macOS & WebDAV-Sync-Artefakte
+.DS_Store
+*conflicted copy*
+
+# Laufzeitdaten, Datenbanken & Snapshots
+storage/*.sqlite
+storage/*.sqlite-*
+storage/.ht_*.sqlite
+storage/.ht_*.sqlite-*
+storage/snapshots/
+
+# Editor / IDE
+.vscode/
+.idea/

@@ -1,0 +1,302 @@
+
+html {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--fg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: var(--lh-normal);
+  background: radial-gradient(circle at top left, rgba(var(--accent-rgb), 0.16), transparent 20%),
+    radial-gradient(circle at 92% 10%, rgba(var(--accent-2), 0.12), transparent 18%),
+    var(--bg);
+  color: var(--fg);
+  overflow-x: hidden;
+  transition: background-color var(--dur-base) var(--ease-out-quart),
+    color var(--dur-base) var(--ease-out-quart);
+  min-height: 100vh;
+}
+
+/* Subtle noise overlay for premium feel — Filmkorn */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* Vignette — dunkelt die Ränder ab, wie ein Objektiv statt eines flachen Screens */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background: var(--vignette);
+}
+
+main {
+  position: relative;
+  z-index: var(--z-base);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: calc(var(--tracking-tight) * 0.7);
+  color: var(--fg);
+  text-transform: none;
+}
+
+h1 { font-size: var(--fs-6xl); font-weight: 800; }
+h2 { font-size: var(--fs-4xl); }
+h3 { font-size: var(--fs-3xl); }
+h4 { font-size: var(--fs-2xl); }
+h5 { font-size: var(--fs-xl); }
+h6 { font-size: var(--fs-lg); }
+
+p {
+  line-height: var(--lh-normal);
+  color: var(--fg-muted);
+}
+
+p.lead {
+  font-size: var(--fs-xl);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+}
+
+a {
+  color: inherit;
+  transition: color var(--dur-fast) var(--ease-out-quart);
+}
+
+a:hover {
+  color: var(--accent);
+}
+
+strong, b {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+small {
+  font-size: var(--fs-sm);
+  color: var(--fg-subtle);
+}
+
+code, pre, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Layout: Container
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: 880px;
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.container-wide {
+  width: 100%;
+  max-width: 1680px;
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+/* ==========================================================================
+   Section spacing
+   ========================================================================== */
+
+section {
+  position: relative;
+  padding-block: var(--section-pad-y);
+}
+
+section + section {
+  margin-top: 0;
+}
+
+/* ==========================================================================
+   Eyebrow (small label above headings)
+   ========================================================================== */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: var(--space-4);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* ==========================================================================
+   Accessibility: skip link
+   ========================================================================== */
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--space-4);
+  z-index: var(--z-modal);
+  padding: var(--space-3) var(--space-5);
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.skip-link:focus-visible {
+  top: var(--space-4);
+}
+
+/* ==========================================================================
+   Loading state
+   ========================================================================== */
+
+[data-loading="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Page Transitions — Veil-Overlay (beeinflusst KEIN Layout, kein Transform
+   auf body, damit Lenis Smooth-Scroll und position:fixed Elemente
+   unbeeinträchtigt bleiben)
+   ========================================================================== */
+
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.5s var(--ease-out-quart);
+  /* Fallback: falls JS nicht lädt, nach 1.6s automatisch wegblenden */
+  animation: gs-veil-fallback 0.01s linear 1.6s forwards;
+}
+
+html.page-ready::before {
+  opacity: 0;
+  animation: none;
+}
+
+html.page-leaving::before {
+  opacity: 1;
+  transition: opacity 0.32s var(--ease-out-quart);
+  animation: none;
+}
+
+@keyframes gs-veil-fallback {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html::before {
+    display: none;
+  }
+}
+
+html[data-cms-preview="true"]::before,
+html[data-cms-preview="true"] .gs-letterbox {
+  display: none !important;
+  opacity: 0 !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ==========================================================================
+   Letterbox — Balken oben/unten, die wie ein Kino-Vorhang/Blende aufgehen.
+   Elemente werden von page-transitions.js einmalig in <body> injiziert.
+   ========================================================================== */
+
+.gs-letterbox {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  background: #000;
+  z-index: 10000;
+  pointer-events: none;
+  transform: scaleY(1);
+  transition: transform var(--dur-cinematic) var(--ease-cinematic);
+  animation: gs-letterbox-fallback 0.01s linear 1.6s forwards;
+}
+
+.gs-letterbox--top {
+  top: 0;
+  transform-origin: top;
+}
+
+.gs-letterbox--bottom {
+  bottom: 0;
+  transform-origin: bottom;
+}
+
+html.page-ready .gs-letterbox {
+  transform: scaleY(0);
+  animation: none;
+}
+
+html.page-leaving .gs-letterbox {
+  transform: scaleY(1);
+  transition: transform var(--dur-slow) var(--ease-in-out);
+  animation: none;
+}
+
+@keyframes gs-letterbox-fallback {
+  to {
+    transform: scaleY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gs-letterbox {
+    display: none;
+  }
+}

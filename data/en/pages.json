@@ -1,0 +1,142 @@
+{
+    "home": {
+        "hero": {
+            "eyebrow": "Welcome",
+            "title": "Your new <span class=\"accent\">website</span> powered by CMSS.",
+            "subtitle": "This is a blank starter template. Open /cms, create your first admin account, and customize everything live.",
+            "ctas": [
+                {
+                    "label": "About us",
+                    "href": "/en/about"
+                },
+                {
+                    "label": "Contact",
+                    "href": "/en/contact"
+                }
+            ],
+            "meta": [
+                {
+                    "value": "MODULAR",
+                    "label": "Composable blocks"
+                },
+                {
+                    "value": "WHITE-LABEL",
+                    "label": "Custom brand & colors"
+                },
+                {
+                    "value": "FAST",
+                    "label": "Ready to launch"
+                }
+            ]
+        },
+        "features": {
+            "eyebrow": "Placeholder section",
+            "title": "Three things this template gives you.",
+            "intro": "Edit these cards in the CMSS or add more sections.",
+            "items": [
+                {
+                    "icon": "✦",
+                    "title": "Visual page builder",
+                    "body": "Edit copy, transitions, and backgrounds live in /cms."
+                },
+                {
+                    "icon": "◐",
+                    "title": "Custom brand & colors",
+                    "body": "Customize logos, fonts, and colors under Design & Framework."
+                },
+                {
+                    "icon": "△",
+                    "title": "Inbox & spam protection",
+                    "body": "Built-in inbox with custom Discord webhook & Cloudflare Turnstile."
+                }
+            ]
+        }
+    },
+    "about": {
+        "hero": {
+            "eyebrow": "About us",
+            "title": "Placeholder page for your <span class=\"accent\">story</span>.",
+            "subtitle": "Share who you are."
+        },
+        "text": {
+            "eyebrow": "Introduction",
+            "title": "A clean text block.",
+            "body": [
+                "This is placeholder text you can edit directly in Gamet Studios CMSS."
+            ]
+        }
+    },
+    "join": {
+        "cta": {
+            "eyebrow": "Next step",
+            "title": "Ready to build your site?",
+            "subtitle": "Open /cms and create your first admin account.",
+            "ctas": [
+                {
+                    "label": "Go to contact form",
+                    "href": "/en/contact"
+                }
+            ]
+        }
+    },
+    "contact": {
+        "hero": {
+            "eyebrow": "Contact",
+            "title": "Send us a <span class=\"accent\">message</span>.",
+            "subtitle": "All submissions appear in your protected inbox at /cms."
+        },
+        "form": {
+            "title": "Contact form",
+            "intro": "Send a test message to your inbox.",
+            "endpoint": "/api/submit.php",
+            "consent": "I agree to the processing of my data for the purpose of answering my inquiry.",
+            "fields": [
+                {
+                    "name": "name",
+                    "label": "Name",
+                    "type": "text",
+                    "required": true,
+                    "placeholder": "Your name"
+                },
+                {
+                    "name": "email",
+                    "label": "Email",
+                    "type": "email",
+                    "required": true,
+                    "placeholder": "name@example.com"
+                },
+                {
+                    "name": "subject",
+                    "label": "Subject",
+                    "type": "text",
+                    "required": false,
+                    "full": true,
+                    "placeholder": "What is this about?"
+                },
+                {
+                    "name": "message",
+                    "label": "Message",
+                    "type": "textarea",
+                    "required": true,
+                    "full": true,
+                    "rows": 5,
+                    "placeholder": "Your message…"
+                }
+            ]
+        }
+    },
+    "privacy": {
+        "hero": {
+            "eyebrow": "Legal",
+            "title": "Privacy Policy",
+            "subtitle": "How we handle your personal data."
+        }
+    },
+    "imprint": {
+        "hero": {
+            "eyebrow": "Legal",
+            "title": "Imprint",
+            "subtitle": "Legal disclosure."
+        }
+    }
+}

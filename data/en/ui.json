@@ -1,0 +1,30 @@
+{
+  "header": {
+    "primaryNav": "Primary navigation",
+    "mobileNav": "Mobile navigation",
+    "menu": "Open menu",
+    "close": "Close",
+    "switchLang": "Switch language",
+    "toggleTheme": "Toggle light/dark mode"
+  },
+  "project": {
+    "more": "Learn more",
+    "status": "Status",
+    "year": "Year",
+    "role": "Role",
+    "website": "Website"
+  },
+  "member": {
+    "more": "Learn more"
+  },
+  "journal": {
+    "read": "Read",
+    "back": "Back to journal"
+  },
+  "form": {
+    "submit": "Send",
+    "sending": "Sending…",
+    "success": "Thanks! We'll be in touch.",
+    "error": "Could not send. Please try again later."
+  }
+}

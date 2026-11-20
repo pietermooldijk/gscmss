@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gamet Studios</title>
+  <meta name="description" content="Gamet Studios — ein Kreativ-Kollektiv. Wir bündeln Kräfte, teilen Ressourcen und holen das Beste aus uns allen heraus." />
+  <link rel="icon" type="image/png" href="/assets/icons/favicon.png" />
+  <meta name="robots" content="index,follow" />
+  <link rel="alternate" hreflang="de" href="/de/" />
+  <link rel="alternate" hreflang="en" href="/en/" />
+  <link rel="alternate" hreflang="x-default" href="/de/" />
+  <style>
+    html, body { background: #0a0a0b; color: #f5f5f6; margin: 0; font-family: system-ui, sans-serif; }
+    .splash {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1.5rem;
+    }
+    .splash__mark {
+      width: 56px; height: 56px; border-radius: 14px;
+      background: linear-gradient(135deg, #A84DA8 0%, #ce6dce 100%);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 800; font-size: 1.5rem;
+    }
+    .splash__title { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; }
+    .splash__links { display: flex; gap: 0.75rem; }
+    .splash__links a {
+      padding: 0.6rem 1.2rem; border-radius: 999px;
+      background: #18181b; color: #f5f5f6; text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.08); font-size: 0.9rem;
+    }
+    .splash__links a:hover { background: #25252a; }
+  </style>
+  <script>
+    (function () {
+      // Deutsch ist die Standardsprache der Seite.
+      window.location.replace("/de/");
+    })();
+  </script>
+</head>
+<body>
+  <noscript>
+    <div class="splash">
+      <span class="splash__mark">G</span>
+      <h1 class="splash__title">Gamet Studios</h1>
+      <div class="splash__links">
+        <a href="/de/">Deutsch</a>
+        <a href="/en/">English</a>
+      </div>
+      <!-- Reihenfolge bewusst: Deutsch ist die Standardsprache der Seite. -->
+    </div>
+  </noscript>
+</body>
+</html>

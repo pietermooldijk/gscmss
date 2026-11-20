@@ -1,0 +1,16 @@
+{
+    "items": [
+        {
+            "slug": "beispiel-mitglied",
+            "name": "Max Mustermann",
+            "role": "Gründer \/ Beispiel-Mitglied",
+            "since": "2026",
+            "quote": "Ein kurzes Zitat als Platzhalter.",
+            "bio": [
+                "Hier steht eine kurze Biografie."
+            ],
+            "skills": [],
+            "links": []
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "items": [
+        {
+            "slug": "beispiel-projekt",
+            "title": "Beispiel-Projekt",
+            "tagline": "Ein Platzhalter-Projekt.",
+            "tags": [
+                "Platzhalter"
+            ],
+            "image": "",
+            "status": "Aktiv",
+            "year": "2026",
+            "role": "Konzept",
+            "website": "https:\/\/beispiel.de",
+            "body": [
+                "Beispieltext im GS CMSS Framework."
+            ]
+        }
+    ]
+}

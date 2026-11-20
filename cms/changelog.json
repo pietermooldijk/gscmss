@@ -1,0 +1,85 @@
+{
+  "latestId": "1.4.0",
+  "releases": [
+    {
+      "id": "1.4.0",
+      "version": "1.4",
+      "type": "update",
+      "title": "Gamet Studios CMSS v1.4 — Siri-Style Cmd+K Command Palette & Startbildschirm",
+      "date": "2026-11-20",
+      "changes": [
+        "Neues Start-Dashboard: Beim Öffnen des CMSS landest du auf einer übersichtlichen Startseite mit Schnellstatistiken, Direktaktionen und Update-Status.",
+        "Automatische Update-Benachrichtigung: Sobald auf gametstudios.media eine neuere Version erscheint, wird im Dashboard automatisch ein Update-Hinweis mit Link zum Discord angezeigt.",
+        "Siri-Style Command Palette (Cmd+K / Strg+K): Natürliche Befehle wie „Wartungsmodus an“, „Neuer Blogpost“, „Bild einfügen“, „Handy-Vorschau“ oder Seitennamen eintippen und direkt ausführen.",
+        "Apple-Style Startbildschirm, CMSS-Badge im Footer und Wartungsmodus-Fix."
+      ]
+    },
+    {
+      "id": "1.3.0",
+      "version": "1.3",
+      "type": "update",
+      "title": "Gamet Studios CMSS v1.3 — Visual Drag & Drop Page Builder",
+      "date": "2026-11-20",
+      "changes": [
+        "Direktes Drag & Drop in der Live-Vorschau: Alle Abschnitte lassen sich per „⠿ Ziehen“ direkt in der Vorschau verschieben, per Toolbar hoch/runter bewegen, duplizieren oder löschen.",
+        "Neue Bausteine-Palette (wie WordPress/Elementor): Spalten-Layout (1–4 Spalten), Textblock, Bild, Bild + Text, Video (MP4/YouTube), Buttons, Zitat, FAQ/Accordion und Trennlinie/Abstand per Drag & Drop in die Vorschau ziehen.",
+        "Elemente direkt in ein Layout einbauen & nebeneinander ziehen: Bausteine lassen sich an den linken/rechten Rand eines Elements ziehen, um automatisch neue Spalten zu erzeugen.",
+        "AES-256-verschlüsselte Core-Update-ZIPs mit Master-Passwort (verhindert Manipulation und automatisches Entpacken durch macOS/Safari)."
+      ]
+    },
+    {
+      "id": "1.2.1-hotfix",
+      "version": "1.2",
+      "type": "hotfix",
+      "title": "Hotfix v1.2.1 — Aufgeräumte Topbar & automatische Versionsnummer",
+      "date": "2026-11-19",
+      "changes": [
+        "Topbar aufgeräumt: Kompaktes CMSS-Logo, klickbare Versions-Pill (öffnet Neuigkeiten) und kürzerer Abmelden-Button ohne Überlappung.",
+        "Versionsnummer wird bei jedem Core-Update automatisch aus cms/changelog.json übernommen (im CMSS und in data/site.json)."
+      ]
+    },
+    {
+      "id": "1.2.0",
+      "version": "1.2",
+      "type": "update",
+      "title": "Gamet Studios CMSS v1.2 — Betrieb, Redaktion & Medien-Suite",
+      "date": "2026-11-19",
+      "changes": [
+        "Update- & Hotfix-Meldungen: Beim ersten Öffnen nach jedem Update oder Hotfix erscheint automatisch eine Übersicht aller Änderungen.",
+        "System-Health-Check (Admin): Zeigt PHP-Version, Schreibrechte (644/755), SQLite, cURL, ZipArchive, GD/WebP und Authentik-Status auf einen Blick.",
+        "Automatische Snapshots & 1-Klick-Rollback: Vor jedem Speichern wird automatisch ein JSON-Snapshot angelegt (die letzten 15 Stände wiederherstellbar).",
+        "Audit-Log (Admin): Protokolliert in SQLite, wer wann welche Änderungen, Uploads oder Exporte durchgeführt hat.",
+        "Wartungsmodus-Schalter: Besucher sehen eine Wartungsseite, während eingeloggte Teammitglieder normal weiterarbeiten können.",
+        "Entwürfe & geplante Veröffentlichung: Projekte und Journal-Posts lassen sich als Entwurf markieren oder zeitlich planen.",
+        "SEO- & OpenGraph-Editor pro Seite: Titel, Meta-Description, OG-Bild und Indexierung direkt im Seiten-Editor anpassbar.",
+        "Impressum & Datenschutz im CMSS editierbar: Rechtstexte lassen sich auf Wunsch direkt im CMSS pflegen.",
+        "Redirect-Manager: Einfache Weiterleitungen (z. B. /alt → /de/projekte) direkt im CMSS verwalten.",
+        "Automatische WebP-Konvertierung & Komprimierung beim Bildupload (JPG/PNG → WebP, max. 1920px) + Finder für ungenutzte Medien.",
+        "Automatischer sitemap.xml-Generator bei jedem Speichern."
+      ]
+    },
+    {
+      "id": "1.1.1-hotfix",
+      "version": "1.1",
+      "type": "hotfix",
+      "title": "Hotfix v1.1.1 — Authentik & Vorschau",
+      "date": "2026-11-18",
+      "changes": [
+        "Authentik-Logout ohne Query-Parameter-Konflikt korrigiert.",
+        "Live-Vorschau im CMSS flackert beim Tippen nicht mehr (Animationen im Preview-Modus deaktiviert).",
+        "Automatische 644/755-Rechte beim Core-Update-ZIP-Import auf Plesk."
+      ]
+    },
+    {
+      "id": "1.1.0",
+      "version": "1.1",
+      "type": "update",
+      "title": "Gamet Studios CMSS v1.1 — Authentik SSO & Rollen",
+      "date": "2026-11-18",
+      "changes": [
+        "Authentik OpenID Connect (OIDC) als Haupt-Login integriert.",
+        "Zwei Rollen eingeführt: Admin (Vollzugriff) und Editor (Inhalte & Postfach)."
+      ]
+    }
+  ]
+}

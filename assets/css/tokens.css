@@ -1,0 +1,205 @@
+/* ==========================================================================
+   Design Tokens — Single Source of Truth
+   Farben, Spacing, Typography, Radii, Shadows, Easing
+   ========================================================================== */
+@font-face {
+  font-family: 'Parkinsans';
+  src: url('/assets/fonts/Parkinsans-VariableFont_wght.ttf') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+:root {
+  /* Typography */
+  --font-sans: "Inter", "Montserrat", system-ui, -apple-system, sans-serif;
+  --font-display: "Montserrat", "Inter", system-ui, sans-serif;
+  --font-brand: "Parkinsans", "Montserrat", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  --fs-2xs: clamp(0.68rem, 0.66rem + 0.2vw, 0.75rem);
+  --fs-xs: clamp(0.82rem, 0.78rem + 0.2vw, 0.9rem);
+  --fs-sm: clamp(0.96rem, 0.9rem + 0.2vw, 1rem);
+  --fs-base: clamp(1.02rem, 0.96rem + 0.25vw, 1.08rem);
+  --fs-lg: clamp(1.18rem, 1.12rem + 0.3vw, 1.3rem);
+  --fs-xl: clamp(1.4rem, 1.3rem + 0.5vw, 1.6rem);
+  --fs-2xl: clamp(1.85rem, 1.55rem + 0.9vw, 2.3rem);
+  --fs-3xl: clamp(2.3rem, 1.95rem + 1.8vw, 3.2rem);
+  --fs-4xl: clamp(3rem, 2.25rem + 2.9vw, 4.5rem);
+  --fs-5xl: clamp(4rem, 2.8rem + 5vw, 5.8rem);
+  --fs-6xl: clamp(5.2rem, 3.4rem + 6.6vw, 7.8rem);
+
+  --lh-tight: 1.05;
+  --lh-snug: 1.2;
+  --lh-normal: 1.55;
+  --lh-relaxed: 1.7;
+
+  --tracking-tight: -0.03em;
+  --tracking-snug: -0.015em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.04em;
+  --tracking-wider: 0.12em;
+
+  /* Spacing scale (rem-based) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --space-11: 12rem;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --radius-full: 999px;
+
+  /* Layout */
+  --container-max: 1440px;
+  --container-pad: clamp(1.25rem, 4vw, 3rem);
+  --section-pad-y: clamp(4rem, 8vw, 8rem);
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-cinematic: cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-fast: 180ms;
+  --dur-base: 320ms;
+  --dur-slow: 600ms;
+  --dur-cinematic: 900ms;
+
+  /* Cinematic framing */
+  --letterbox-h: clamp(10px, 2.4vw, 28px);
+  --frame-h: clamp(8px, 1.6vw, 16px);
+
+  /* Z-index */
+  --z-base: 1;
+  --z-sticky: 50;
+  --z-header: 100;
+  --z-overlay: 500;
+  --z-modal: 1000;
+}
+
+/* ==========================================================================
+   Dark Theme (Default — like aurvn.com)
+   ========================================================================== */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #060607;
+  --bg-elev: #0e0e10;
+  --bg-elev-2: #17171a;
+  --bg-inverse: #f5f5f6;
+
+  --surface: #111113;
+  --surface-hover: #1b1b1f;
+  --surface-active: #242429;
+
+  --fg: #f5f5f6;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #71717a;
+  --fg-inverse: #0a0a0b;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-focus: #A84DA8;
+
+  --accent: #ba52ba;
+  --accent-hover: #9d479d;
+  --accent-fg: #ffffff;
+  --accent-rgb: 168, 77, 168;
+  --accent-2: 45, 205, 255;
+  --accent-muted: rgba(var(--accent-rgb), 0.16);
+  --accent-muted-soft: rgba(var(--accent-rgb), 0.08);
+
+  /* Warmes Bühnenlicht — zweiter Akzent für Kino-Details (Slate-Chips, Marquee-Birnen) */
+  --accent-gold: #e8b64a;
+  --accent-gold-rgb: 232, 182, 74;
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --gradient-hero: radial-gradient(circle at 20% 10%, rgba(var(--accent-rgb), 0.26), transparent 32%),
+    radial-gradient(circle at 85% 20%, rgba(var(--accent-2), 0.2), transparent 24%);
+  --gradient-accent: linear-gradient(135deg, #b750b7 0%, #c96ac9 100%);
+  --gradient-fade: linear-gradient(180deg, transparent 0%, var(--bg) 100%);
+  --gradient-surface: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  --vignette: radial-gradient(ellipse 130% 90% at 50% 40%, transparent 48%, rgba(0, 0, 0, 0.62) 100%);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 48px rgba(var(--accent-rgb), 0.32);
+
+  --noise-opacity: 0.055;
+}
+
+/* ==========================================================================
+   Light Theme (like macpaw.com)
+   ========================================================================== */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #fafaf9;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #f4f4f3;
+  --bg-inverse: #0a0a0b;
+
+  --surface: #ffffff;
+  --surface-hover: #f4f4f3;
+  --surface-active: #ebebe9;
+
+  --fg: #0a0a0b;
+  --fg-muted: #52525b;
+  --fg-subtle: #71717a;
+  --fg-inverse: #fafaf9;
+
+  --border: rgba(10, 10, 11, 0.08);
+  --border-strong: rgba(10, 10, 11, 0.16);
+  --border-focus: #A84DA8;
+
+  --accent: #A84DA8;
+  --accent-hover: #8c3b8c;
+  --accent-fg: #ffffff;
+  --accent-rgb: 168, 77, 168;
+  --accent-muted: rgba(var(--accent-rgb), 0.10);
+
+  /* Warmes Bühnenlicht — zweiter Akzent für Kino-Details (Slate-Chips, Marquee-Birnen) */
+  --accent-gold: #b8842e;
+  --accent-gold-rgb: 184, 132, 46;
+
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+
+  --gradient-hero: radial-gradient(
+    ellipse 80% 50% at 50% 0%,
+    rgba(var(--accent-rgb), 0.16) 0%,
+    transparent 60%
+  );
+  --gradient-accent: linear-gradient(135deg, #A84DA8 0%, #ce6dce 100%);
+  --gradient-fade: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--bg) 100%
+  );
+  --vignette: radial-gradient(ellipse 130% 90% at 50% 40%, transparent 60%, rgba(10, 10, 11, 0.08) 100%);
+
+  --shadow-sm: 0 1px 2px rgba(10, 10, 11, 0.06);
+  --shadow-md: 0 8px 24px rgba(10, 10, 11, 0.08);
+  --shadow-lg: 0 24px 60px rgba(10, 10, 11, 0.12);
+  --shadow-glow: 0 0 48px rgba(var(--accent-rgb), 0.24);
+
+  --noise-opacity: 0.02;
+}

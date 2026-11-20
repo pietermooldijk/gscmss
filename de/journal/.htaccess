@@ -1,0 +1,7 @@
+# Ohne diese Zeile leitet Apache Zugriffe auf diesen Ordnernamen (ohne
+# abschließenden Slash) automatisch mit 301 auf sich selbst + "/" um, noch
+# bevor die Rewrite-Regel aus dem Root-.htaccess greifen kann, die stattdessen
+# die gleichnamige .html-Datei eine Ebene höher ausliefern soll (z.B.
+# /de/projekte -> de/projekte.html statt eines Verzeichniszugriffs auf
+# de/projekte/, wo es keine eigene index.html gibt).
+DirectorySlash Off

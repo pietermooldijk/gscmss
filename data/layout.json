@@ -1,0 +1,87 @@
+{
+    "version": 1,
+    "themeOverrides": {
+        "accentDark": "#ba52ba",
+        "accentLight": "#A84DA8",
+        "accentSecondary": "#2dcdff",
+        "accentGoldDark": "#e8b64a",
+        "bgDark": "#060607",
+        "bgLight": "#fafaf9",
+        "cinemaDeco": false,
+        "radiusStyle": "default"
+    },
+    "pages": {
+        "home": {
+            "label": "Startseite (Platzhalter 1)",
+            "pathDe": "/de/",
+            "pathEn": "/en/",
+            "sections": [
+                {
+                    "id": "home-hero",
+                    "component": "gs-hero",
+                    "key": "home",
+                    "transition": "none",
+                    "visible": true
+                },
+                {
+                    "id": "home-features",
+                    "component": "gs-feature-cards",
+                    "key": "home",
+                    "transition": "stage-curtain",
+                    "visible": true
+                },
+                {
+                    "id": "home-cta",
+                    "component": "gs-cta",
+                    "key": "join",
+                    "transition": "glow-bridge",
+                    "visible": true
+                }
+            ]
+        },
+        "about": {
+            "label": "Über uns (Platzhalter 2)",
+            "pathDe": "/de/ueber-uns",
+            "pathEn": "/en/about",
+            "sections": [
+                {
+                    "id": "about-hero",
+                    "component": "gs-hero",
+                    "key": "about",
+                    "variant": "sm",
+                    "transition": "none",
+                    "visible": true
+                },
+                {
+                    "id": "about-text",
+                    "component": "gs-text-block",
+                    "key": "about",
+                    "transition": "stage-curtain",
+                    "visible": true
+                }
+            ]
+        },
+        "contact": {
+            "label": "Kontakt (Platzhalter 3)",
+            "pathDe": "/de/kontakt",
+            "pathEn": "/en/contact",
+            "sections": [
+                {
+                    "id": "contact-hero",
+                    "component": "gs-hero",
+                    "key": "contact",
+                    "variant": "sm",
+                    "transition": "none",
+                    "visible": true
+                },
+                {
+                    "id": "contact-form",
+                    "component": "gs-contact-form",
+                    "key": "contact",
+                    "transition": "none",
+                    "visible": true
+                }
+            ]
+        }
+    }
+}

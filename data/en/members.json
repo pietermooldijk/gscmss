@@ -1,0 +1,16 @@
+{
+    "items": [
+        {
+            "slug": "beispiel-mitglied",
+            "name": "Alex Example",
+            "role": "Founder \/ Sample Member",
+            "since": "2026",
+            "quote": "A short placeholder quote.",
+            "bio": [
+                "A short biography."
+            ],
+            "skills": [],
+            "links": []
+        }
+    ]
+}

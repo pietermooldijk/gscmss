@@ -1,0 +1,136 @@
+{
+    "version": "1.4",
+    "brand": {
+        "name": "Meine Marke",
+        "logo": {
+            "mode": "text",
+            "dark": "",
+            "light": "",
+            "height": "2.2rem"
+        },
+        "favicon": "/assets/icons/favicon.png",
+        "tagline": {
+            "de": "Eine kurze Beschreibung deines Projekts oder Unternehmens.",
+            "en": "A short description of your project or company."
+        }
+    },
+    "contact": {
+        "email": "kontakt@beispiel.de",
+        "endpoint": "/api/submit.php"
+    },
+    "nav": {
+        "de": [
+            {
+                "label": "Start",
+                "href": "/de/"
+            },
+            {
+                "label": "Über uns",
+                "href": "/de/ueber-uns"
+            },
+            {
+                "label": "Kontakt",
+                "href": "/de/kontakt"
+            }
+        ],
+        "en": [
+            {
+                "label": "Home",
+                "href": "/en/"
+            },
+            {
+                "label": "About",
+                "href": "/en/about"
+            },
+            {
+                "label": "Contact",
+                "href": "/en/contact"
+            }
+        ]
+    },
+    "pageMap": {
+        "/de/": "/en/",
+        "/de/ueber-uns": "/en/about",
+        "/de/kontakt": "/en/contact",
+        "/de/impressum": "/en/imprint",
+        "/de/datenschutz": "/en/privacy",
+        "/en/": "/de/",
+        "/en/about": "/de/ueber-uns",
+        "/en/contact": "/de/kontakt",
+        "/en/imprint": "/de/impressum",
+        "/en/privacy": "/de/datenschutz"
+    },
+    "footer": {
+        "tagline": {
+            "de": "Erstellt mit dem Gamet Studios CMSS Framework.",
+            "en": "Built with the Gamet Studios CMSS Framework."
+        },
+        "columns": {
+            "de": [
+                {
+                    "title": "Navigation",
+                    "links": [
+                        {
+                            "label": "Startseite",
+                            "href": "/de/"
+                        },
+                        {
+                            "label": "Über uns",
+                            "href": "/de/ueber-uns"
+                        },
+                        {
+                            "label": "Kontakt",
+                            "href": "/de/kontakt"
+                        }
+                    ]
+                }
+            ],
+            "en": [
+                {
+                    "title": "Navigation",
+                    "links": [
+                        {
+                            "label": "Home",
+                            "href": "/en/"
+                        },
+                        {
+                            "label": "About",
+                            "href": "/en/about"
+                        },
+                        {
+                            "label": "Contact",
+                            "href": "/en/contact"
+                        }
+                    ]
+                }
+            ]
+        },
+        "social": [],
+        "legal": {
+            "de": [
+                {
+                    "label": "Impressum",
+                    "href": "/de/impressum"
+                },
+                {
+                    "label": "Datenschutz",
+                    "href": "/de/datenschutz"
+                }
+            ],
+            "en": [
+                {
+                    "label": "Imprint",
+                    "href": "/en/imprint"
+                },
+                {
+                    "label": "Privacy",
+                    "href": "/en/privacy"
+                }
+            ]
+        },
+        "copyright": {
+            "de": "© {year} Meine Marke – Alle Rechte vorbehalten",
+            "en": "© {year} My Brand – All rights reserved"
+        }
+    }
+}

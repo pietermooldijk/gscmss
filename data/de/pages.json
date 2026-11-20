@@ -1,0 +1,142 @@
+{
+    "home": {
+        "hero": {
+            "eyebrow": "Willkommen",
+            "title": "Deine neue <span class=\"accent\">Webseite</span> mit CMSS.",
+            "subtitle": "Dies ist ein blanko Starter-Template. Öffne /cms, lege deinen ersten Account an und passe Texte, Farben, Logos und Abschnitte direkt live an.",
+            "ctas": [
+                {
+                    "label": "Über uns",
+                    "href": "/de/ueber-uns"
+                },
+                {
+                    "label": "Kontakt",
+                    "href": "/de/kontakt"
+                }
+            ],
+            "meta": [
+                {
+                    "value": "MODULAR",
+                    "label": "Frei kombinierbare Blöcke"
+                },
+                {
+                    "value": "WEISS-LABEL",
+                    "label": "Eigene Farben & Logos"
+                },
+                {
+                    "value": "SCHNELL",
+                    "label": "Fertig für den Live-Gang"
+                }
+            ]
+        },
+        "features": {
+            "eyebrow": "Platzhalter-Bereich",
+            "title": "Drei Dinge, die dieses Template kann.",
+            "intro": "Bearbeite diese Karten im CMSS oder füge weitere Abschnitte hinzu.",
+            "items": [
+                {
+                    "icon": "✦",
+                    "title": "Visueller Baukasten",
+                    "body": "In /cms Texte, Übergänge und Hintergründe live anpassen."
+                },
+                {
+                    "icon": "◐",
+                    "title": "Eigene Marke & Farben",
+                    "body": "Logos, Schriften und Akzentfarben unter Design & Framework ändern."
+                },
+                {
+                    "icon": "△",
+                    "title": "Postfach & Spam-Schutz",
+                    "body": "Integriertes Postfach mit eigenem Discord-Webhook & Cloudflare Turnstile."
+                }
+            ]
+        }
+    },
+    "about": {
+        "hero": {
+            "eyebrow": "Über uns",
+            "title": "Platzhalter-Seite für deine <span class=\"accent\">Geschichte</span>.",
+            "subtitle": "Hier kannst du beschreiben, wer du bist."
+        },
+        "text": {
+            "eyebrow": "Vorstellung",
+            "title": "Ein sauberer Text-Abschnitt.",
+            "body": [
+                "Dieser Text ist ein Platzhalter und kann direkt im Gamet Studios CMSS bearbeitet werden."
+            ]
+        }
+    },
+    "join": {
+        "cta": {
+            "eyebrow": "Nächster Schritt",
+            "title": "Bereit für deine eigene Seite?",
+            "subtitle": "Öffne /cms und lege deinen ersten Admin-Account an.",
+            "ctas": [
+                {
+                    "label": "Zum Kontaktformular",
+                    "href": "/de/kontakt"
+                }
+            ]
+        }
+    },
+    "contact": {
+        "hero": {
+            "eyebrow": "Kontakt",
+            "title": "Schreib uns eine <span class=\"accent\">Nachricht</span>.",
+            "subtitle": "Alle Einsendungen landen im geschützten Postfach unter /cms."
+        },
+        "form": {
+            "title": "Kontaktformular",
+            "intro": "Sende eine Test-Nachricht an dein Postfach.",
+            "endpoint": "/api/submit.php",
+            "consent": "Ich bin mit der Verarbeitung meiner Daten zum Zweck der Beantwortung einverstanden.",
+            "fields": [
+                {
+                    "name": "name",
+                    "label": "Name",
+                    "type": "text",
+                    "required": true,
+                    "placeholder": "Dein Name"
+                },
+                {
+                    "name": "email",
+                    "label": "E-Mail",
+                    "type": "email",
+                    "required": true,
+                    "placeholder": "name@beispiel.de"
+                },
+                {
+                    "name": "subject",
+                    "label": "Betreff",
+                    "type": "text",
+                    "required": false,
+                    "full": true,
+                    "placeholder": "Worum geht es?"
+                },
+                {
+                    "name": "message",
+                    "label": "Nachricht",
+                    "type": "textarea",
+                    "required": true,
+                    "full": true,
+                    "rows": 5,
+                    "placeholder": "Deine Nachricht…"
+                }
+            ]
+        }
+    },
+    "privacy": {
+        "hero": {
+            "eyebrow": "Rechtliches",
+            "title": "Datenschutzerklärung",
+            "subtitle": "Informationen zum Umgang mit deinen Daten."
+        }
+    },
+    "imprint": {
+        "hero": {
+            "eyebrow": "Rechtliches",
+            "title": "Impressum",
+            "subtitle": "Angaben gemäß § 5 DDG."
+        }
+    }
+}
