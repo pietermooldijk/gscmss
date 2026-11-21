@@ -37,17 +37,46 @@ export function initSmoothScroll() {
     lenis.raf(time);
   }
 
+  let rafId = 0;
+
   // Sync mit GSAP ScrollTrigger
   if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add((t) => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
   } else {
-    requestAnimationFrame(function tick(time) {
+    const tick = (time) => {
+      if (document.hidden) {
+        rafId = 0;
+        return;
+      }
       raf(time);
-      requestAnimationFrame(tick);
-    });
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
   }
+
+  // Bei verstecktem Tab Animationen & Smooth-Scroll pausieren (spart RAM & CPU)
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      lenis?.stop();
+      if (typeof gsap !== "undefined") gsap.ticker.sleep();
+    } else {
+      if (typeof gsap !== "undefined") gsap.ticker.wake();
+      lenis?.start();
+      if (typeof gsap === "undefined" && !rafId) {
+        const tick = (time) => {
+          if (document.hidden) {
+            rafId = 0;
+            return;
+          }
+          raf(time);
+          rafId = requestAnimationFrame(tick);
+        };
+        rafId = requestAnimationFrame(tick);
+      }
+    }
+  });
 
   // Anchor-Links sanft scrollen
   document.addEventListener("click", (e) => {

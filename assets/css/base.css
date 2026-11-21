@@ -23,7 +23,7 @@ body {
   min-height: 100vh;
 }
 
-/* Subtle noise overlay for premium feel — Filmkorn */
+/* Subtle noise overlay for premium feel — Filmkorn (gekachelt & ohne Blend-Isolation für minimalen RAM-Verbrauch) */
 body::before {
   content: "";
   position: fixed;
@@ -31,8 +31,8 @@ body::before {
   pointer-events: none;
   z-index: 1;
   opacity: var(--noise-opacity);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
 }
 
 /* Vignette — dunkelt die Ränder ab, wie ein Objektiv statt eines flachen Screens */

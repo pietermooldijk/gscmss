@@ -4942,8 +4942,8 @@ function renderMediaSidebar(sidebar) {
   const renderMediaCard = (img) => `
     <div class="cms-acc" style="padding:0.5rem; display:flex; flex-direction:column; gap:0.4rem; min-width:0; overflow:hidden; ${unusedSet.has(img.url) ? 'border-color:rgba(245,158,11,0.45);' : ''}">
       ${img.type === 'video' || /\.(mp4|webm|mov)$/i.test(img.url)
-        ? `<video src="${esc(img.url)}" muted loop autoplay playsinline style="width:100%; height:84px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;"></video>`
-        : `<img src="${esc(img.url)}" alt="${esc(img.name)}" style="width:100%; height:84px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;" loading="lazy" />`
+        ? `<video src="${esc(img.url)}" muted loop playsinline preload="metadata" onmouseenter="this.play().catch(()=>{})" onmouseleave="this.pause()" style="width:100%; height:84px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;"></video>`
+        : `<img src="${esc(img.url)}" alt="${esc(img.name)}" style="width:100%; height:84px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;" loading="lazy" decoding="async" />`
       }
       <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--fg-subtle); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(img.name)}">${esc(img.name)}</div>
       ${unusedSet.has(img.url) ? `<div style="font-size:10px; color:#fbbf24;">⚠ Ungenutzt</div>` : ''}

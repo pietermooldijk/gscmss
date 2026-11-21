@@ -10,7 +10,55 @@ import { loadLayout, loadSite, injectLiveCache, lang } from "./core/data-loader.
 let activeLayout = null;
 let activePageKey = null;
 let bgObserver = null;
+let bgVideoObserver = null;
 const bgNodeCache = new Map();
+
+function releaseVideoEl(el) {
+  const vid = el?.tagName === "VIDEO" ? el : el?.querySelector?.("video");
+  if (!vid) return;
+  try {
+    bgVideoObserver?.unobserve(vid);
+    vid.pause();
+    vid.removeAttribute("src");
+    vid.load();
+  } catch { /* ignore */ }
+}
+
+function observeBgVideo(vid) {
+  if (!vid || vid.dataset.bgVidObserved === "1") return;
+  vid.dataset.bgVidObserved = "1";
+  if (typeof IntersectionObserver === "undefined") {
+    vid.play?.().catch(() => {});
+    return;
+  }
+  if (!bgVideoObserver) {
+    bgVideoObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const v = entry.target;
+          if (entry.isIntersecting && !document.hidden) {
+            v.dataset.inView = "1";
+            v.play?.().catch(() => {});
+          } else {
+            v.dataset.inView = "0";
+            if (!v.paused) v.pause();
+          }
+        }
+      },
+      { rootMargin: "200px 0px" }
+    );
+    document.addEventListener("visibilitychange", () => {
+      document.querySelectorAll(".gs-sec-bg video").forEach((v) => {
+        if (document.hidden) {
+          if (!v.paused) v.pause();
+        } else if (v.dataset.inView === "1") {
+          v.play?.().catch(() => {});
+        }
+      });
+    });
+  }
+  bgVideoObserver.observe(vid);
+}
 
 function normalizePath(p = "") {
   return p.replace(/index\.html$/, "").replace(/\.html$/, "").replace(/\/+$/, "") || "/";
@@ -201,8 +249,11 @@ function ensureSectionBackgrounds() {
   if (!main || !activeLayout || !activePageKey) return;
 
   const sections = activeLayout.pages?.[activePageKey]?.sections || [];
-  for (const sec of sections) {
+  const activeIds = new Set();
+  for (let secIdx = 0; secIdx < sections.length; secIdx++) {
+    const sec = sections[secIdx];
     if (!sec.id) continue;
+    activeIds.add(sec.id);
     const hostEl = main.querySelector(`[data-cms-sec-id="${sec.id}"]`);
     if (!hostEl) continue;
 
@@ -212,7 +263,15 @@ function ensureSectionBackgrounds() {
 
     const existingBg = hostEl.querySelector(":scope > .gs-sec-bg");
     if (!sec.bgMedia) {
-      if (existingBg) existingBg.remove();
+      if (existingBg) {
+        releaseVideoEl(existingBg);
+        existingBg.remove();
+      }
+      const oldCached = bgNodeCache.get(sec.id);
+      if (oldCached) {
+        releaseVideoEl(oldCached.el);
+        bgNodeCache.delete(sec.id);
+      }
       continue;
     }
 
@@ -226,13 +285,20 @@ function ensureSectionBackgrounds() {
 
     if (existingBg && existingBg.getAttribute("data-bg-sig") === sig) {
       bgNodeCache.set(sec.id, { sig, mediaUrl: sec.bgMedia, el: existingBg });
+      const existingVid = existingBg.querySelector("video");
+      if (existingVid) observeBgVideo(existingVid);
       continue;
     }
 
     const cached = bgNodeCache.get(sec.id);
     if (cached && cached.sig === sig && cached.el) {
-      if (existingBg && existingBg !== cached.el) existingBg.remove();
+      if (existingBg && existingBg !== cached.el) {
+        releaseVideoEl(existingBg);
+        existingBg.remove();
+      }
       hostEl.prepend(cached.el);
+      const cachedVid = cached.el.querySelector("video");
+      if (cachedVid) observeBgVideo(cachedVid);
       continue;
     }
 
@@ -240,6 +306,11 @@ function ensureSectionBackgrounds() {
 
     // Wenn dasselbe Bild/Video nur andere Ränder/Opacity/Blur bekommt, DOM-Element wiederverwenden (0 Flackern!)
     let bgWrap = existingBg || (cached && cached.mediaUrl === sec.bgMedia ? cached.el : null);
+    if (bgWrap && cached && cached.mediaUrl !== sec.bgMedia) {
+      releaseVideoEl(bgWrap);
+      bgWrap.remove();
+      bgWrap = null;
+    }
     if (!bgWrap) {
       bgWrap = document.createElement("div");
       bgWrap.className = "gs-sec-bg";
@@ -247,19 +318,22 @@ function ensureSectionBackgrounds() {
         const vid = document.createElement("video");
         vid.className = "gs-sec-bg__media";
         vid.src = sec.bgMedia;
-        vid.autoplay = true;
+        vid.preload = "metadata";
         vid.muted = true;
         vid.loop = true;
         vid.playsInline = true;
+        vid.disablePictureInPicture = true;
         vid.setAttribute("playsinline", "");
         vid.setAttribute("muted", "");
         bgWrap.appendChild(vid);
+        observeBgVideo(vid);
       } else {
         const img = document.createElement("img");
         img.className = "gs-sec-bg__media";
         img.src = sec.bgMedia;
         img.alt = "";
-        img.loading = "eager";
+        img.decoding = "async";
+        img.loading = secIdx === 0 ? "eager" : "lazy";
         bgWrap.appendChild(img);
       }
     }
@@ -273,11 +347,20 @@ function ensureSectionBackgrounds() {
     const mediaEl = bgWrap.querySelector(".gs-sec-bg__media");
     if (mediaEl) {
       mediaEl.style.filter = Number(blur) > 0 ? `blur(${blur}px)` : "";
+      if (mediaEl.tagName === "VIDEO") observeBgVideo(mediaEl);
     }
 
     bgNodeCache.set(sec.id, { sig, mediaUrl: sec.bgMedia, el: bgWrap });
     if (bgWrap.parentNode !== hostEl) {
       hostEl.prepend(bgWrap);
+    }
+  }
+
+  // Verwaiste Cache-Einträge freigeben
+  for (const [id, entry] of bgNodeCache.entries()) {
+    if (!activeIds.has(id)) {
+      releaseVideoEl(entry.el);
+      bgNodeCache.delete(id);
     }
   }
 }

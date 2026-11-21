@@ -1,6 +1,19 @@
 {
-  "latestId": "1.4.0",
+  "latestId": "1.4.1-hotfix",
   "releases": [
+    {
+      "id": "1.4.1-hotfix",
+      "version": "1.4.1",
+      "type": "hotfix",
+      "title": "Hotfix v1.4.1 — RAM- & GPU-Performance-Optimierung",
+      "date": "2026-11-21",
+      "changes": [
+        "Drastisch reduzierter Arbeitsspeicher-Verbrauch (insbesondere Safari/macOS Retina): Dauerhafte GPU-Layer (will-change, translate3d und große CSS-Blur-Filter auf Gradienten) wurden entfernt bzw. nach Animationsende automatisch freigegeben.",
+        "Filmkorn-Overlay optimiert: Gekachelte 160px-SVG-Textur ohne ressourcenintensiven Fullscreen-Blend-Buffer.",
+        "Intelligentes Video- & Medien-Management: Hintergrundvideos pausieren automatisch außerhalb des sichtbaren Bereichs sowie in inaktiven Tabs; Hintergrundbilder laden lazy & asynchron.",
+        "Animationen & Smooth-Scroll (GSAP/Lenis) pausieren bei inaktiven Tabs; Medienbibliothek im CMSS spielt Video-Vorschauen erst beim Hover ab."
+      ]
+    },
     {
       "id": "1.4.0",
       "version": "1.4",

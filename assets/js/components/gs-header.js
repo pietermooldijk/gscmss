@@ -119,12 +119,22 @@ class GsHeader extends HTMLElement {
       })
     );
 
-    // Scroll-Class
-    const onScroll = () => {
+    // Scroll-Class (alten Listener zuerst entfernen, um Leaks bei Live-Updates zu vermeiden)
+    if (this._onScroll) {
+      window.removeEventListener("scroll", this._onScroll);
+    }
+    this._onScroll = () => {
       header.setAttribute("data-scrolled", window.scrollY > 12 ? "true" : "false");
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    this._onScroll();
+    window.addEventListener("scroll", this._onScroll, { passive: true });
+  }
+
+  disconnectedCallback() {
+    if (this._onScroll) {
+      window.removeEventListener("scroll", this._onScroll);
+      this._onScroll = null;
+    }
   }
 }
 

@@ -200,7 +200,6 @@
 
 [data-reveal] {
   opacity: 0;
-  will-change: transform, opacity;
 }
 
 [data-reveal-ready] {

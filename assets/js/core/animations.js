@@ -69,6 +69,7 @@ export function animateReveal(scope = document) {
         duration: 1.05,
         ease: "expo.out",
         delay,
+        clearProps: "transform,willChange",
         scrollTrigger: {
           trigger: el,
           start: "top 88%",
@@ -140,7 +141,6 @@ export function animateTextReveal(scope = document) {
             const word = document.createElement("span");
             word.className = "word";
             word.style.display = "inline-block";
-            word.style.willChange = "transform, opacity";
             word.style.opacity = "0";
             word.textContent = part;
 
@@ -174,6 +174,7 @@ export function animateTextReveal(scope = document) {
         duration: 1.1,
         ease: "expo.out",
         stagger: 0.04,
+        clearProps: "transform,willChange",
         scrollTrigger: {
           trigger: el,
           start: "top 85%",
@@ -227,6 +228,9 @@ export function animateHeroGlow(scope = document) {
     if (el.dataset.heroGlowReady) return;
     el.dataset.heroGlowReady = "true";
 
+    let breathTween = null;
+    const hero = el.closest(".gs-hero") || el;
+
     // 1) Einmaliges Einblenden beim Laden.
     gsap.fromTo(
       el,
@@ -238,24 +242,20 @@ export function animateHeroGlow(scope = document) {
         ease: "expo.out",
         onComplete: () => {
           // 2) Erst NACHDEM das Einblenden fertig ist, startet ein sehr
-          // langsames, zeitbasiertes "Atmen" (nur Skalierung, keine
-          // Rotation). Läuft komplett unabhängig vom Scroll.
-          gsap.to(el, {
+          // langsames, zeitbasiertes "Atmen" — pausiert automatisch außerhalb des Viewports.
+          breathTween = gsap.to(el, {
             scale: 1.05,
             duration: 5,
             ease: "sine.inOut",
             yoyo: true,
             repeat: -1,
+            paused: document.hidden,
           });
         },
       }
     );
 
-    // 3) Sehr dezenter, EINZELNER Scroll-Tween — animiert ausschließlich
-    // "yPercent" (Position). Das Atmen oben animiert ausschließlich "scale".
-    // Beide laufen nie auf derselben Property gleichzeitig — genau das war
-    // beim letzten Mal der Grund für das unruhige "Herumfliegen".
-    const hero = el.closest(".gs-hero") || el;
+    // 3) Dezenter Scroll-Tween + automatisches Pausieren des Atmens außerhalb des Viewports
     gsap.to(el, {
       yPercent: 10,
       ease: "none",
@@ -264,6 +264,10 @@ export function animateHeroGlow(scope = document) {
         start: "top top",
         end: "bottom top",
         scrub: 0.6,
+        onLeave: () => breathTween?.pause(),
+        onEnterBack: () => {
+          if (!document.hidden) breathTween?.resume();
+        },
       },
     });
   });
