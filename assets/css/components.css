@@ -1579,7 +1579,7 @@ gs-member-detail { display: block; }
   height: 100%;
   width: 0%;
   border-radius: inherit;
-  background: var(--gradient-accent);
+  background: var(--accent);
 }
 
 @media (max-width: 880px) {
@@ -3291,4 +3291,76 @@ html[data-cms-preview="true"] .gs-splash {
 .gs-footer__cmss-badge:hover {
   border-color: var(--border-strong);
   color: var(--fg);
+}
+
+/* WYSIWYG Inline-Editor & Resize-Handles (nur im ?cms_preview=1 Modus) */
+#gs-wysiwyg-bar {
+  position: fixed;
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.45rem;
+  border-radius: 10px;
+  background: rgba(16, 16, 20, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+}
+#gs-wysiwyg-bar button {
+  border: none;
+  background: transparent;
+  color: #e4e4e7;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.28rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#gs-wysiwyg-bar button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.gs-wysiwyg-editing {
+  outline: 2px solid var(--accent, #ba52ba) !important;
+  outline-offset: 6px;
+  border-radius: 6px;
+  background: rgba(186, 82, 186, 0.08);
+  cursor: text !important;
+}
+html[data-cms-preview="true"] [data-wysiwyg-bound="1"]:hover:not(.gs-wysiwyg-editing) {
+  outline: 1.5px dashed rgba(45, 205, 255, 0.6);
+  outline-offset: 4px;
+  border-radius: 4px;
+  cursor: text;
+}
+html[data-cms-preview="true"] main > [data-cms-sec-id].gs-pb-selected {
+  outline: 2px solid rgba(45, 205, 255, 0.75) !important;
+  outline-offset: -2px;
+}
+.gs-pb-resize-handle {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 950;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(16, 16, 20, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  font-size: 12px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: nwse-resize;
+  user-select: none;
+}
+html[data-cms-preview="true"] [data-cms-sec-id]:hover .gs-pb-resize-handle,
+html[data-cms-preview="true"] [data-cms-sec-id].gs-pb-selected .gs-pb-resize-handle,
+html[data-cms-preview="true"] .gs-cb__layout-item:hover .gs-pb-resize-handle {
+  display: inline-flex;
+}
+html[data-cms-preview="true"] .gs-cb__layout-item {
+  position: relative;
 }

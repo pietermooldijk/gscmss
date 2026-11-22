@@ -1,6 +1,21 @@
 {
-  "latestId": "1.4.2",
+  "latestId": "1.5.0",
   "releases": [
+    {
+      "id": "1.5.0",
+      "version": "1.5",
+      "type": "update",
+      "title": "Gamet Studios CMSS v1.5 — WYSIWYG-Editor, Resize-Handles & Medien-Dateimanager",
+      "date": "2026-11-22",
+      "changes": [
+        "WYSIWYG-Bearbeitung direkt in der Vorschau: Texte, Überschriften, Zitate und Bildunterschriften direkt anklicken und wie in Word formatieren (Fett, Kursiv, Unterstrichen, Links) — inklusive Live-Synchronisierung.",
+        "Drag-to-Resize für Bausteine & Spalten: Bilder, Textblöcke und Layout-Elemente per ↘-Anfasser direkt größer/kleiner ziehen mit automatischer Layout-Anpassung.",
+        "Neuer Medien-Dateimanager im Vollbild: Ohne störende Seitenvorschau, mit Ordnerstruktur links, Suchfeld, Ungenutzt-Filter sowie Umschaltung zwischen Galerie- und Listenansicht.",
+        "Coolicons SVG-Icons im gesamten CMSS statt Emojis.",
+        "Authentik-SSO-Fix: Rollenwechsel (Admin / Editor) werden jetzt auch bei laufenden Sessions live über den Userinfo-Endpunkt aktualisiert.",
+        "Mitglieder-Vorschau-Fix: Beim Ändern oder Hochladen eines Profilbilds bleibt die Vorschau jetzt zuverlässig auf der Profil-Detailseite des Mitglieds."
+      ]
+    },
     {
       "id": "1.4.2",
       "version": "1.4.2",

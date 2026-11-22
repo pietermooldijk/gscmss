@@ -134,6 +134,100 @@ body {
   overflow: hidden;
 }
 
+.cms-workspace.is-media-mode {
+  grid-template-columns: 1fr;
+}
+
+.cms-workspace.is-media-mode .cms-preview {
+  display: none;
+}
+
+.cms-workspace.is-media-mode .cms-sidebar {
+  border-right: none;
+  padding: 1.5rem 2rem;
+}
+
+.cms-media-shell {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.cms-media-tree {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cms-media-tree-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--fg-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cms-media-tree-btn:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cms-media-tree-btn.is-active {
+  color: var(--fg);
+  background: var(--surface-active);
+  border-color: var(--border);
+}
+
+.cms-media-drop-zone.is-drop-target,
+.cms-media-tree-btn.is-drop-target {
+  border-color: var(--accent, #ba52ba) !important;
+  background: rgba(186, 82, 186, 0.16) !important;
+  color: #fff !important;
+}
+
+.cms-media-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 0.85rem;
+}
+
+.cms-media-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.cms-media-list-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1.4fr) minmax(0, 1.6fr) 100px 130px;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+
+.cms-media-list-row:last-child {
+  border-bottom: none;
+}
+
 .cms-sidebar {
   height: 100%;
   overflow-y: auto;

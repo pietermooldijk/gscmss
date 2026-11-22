@@ -2,6 +2,42 @@
  * Gamet Studios CMSS — Aufgeräumter Single-Sidebar Visual Editor & Multi-Site Framework
  */
 
+const COOLICONS = {
+  dashboard: '<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+  folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.77 1.02 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>',
+  copy: '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  sparkles: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M5 3v4"/><path d="M3 5h4"/>',
+  bell: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  warning: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+  list: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
+  search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  external: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
+  bolt: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  package: '<path d="M16.5 9.4l-9-5.19"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+  wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  rocket: '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>',
+  refresh: '<polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>',
+};
+
+function ci(name, size = 15) {
+  const paths = COOLICONS[name] || COOLICONS.file;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:inline-block; vertical-align:-0.18em; flex-shrink:0;">${paths}</svg>`;
+}
+
 const TRANSITIONS = [
   { id: 'stage-curtain', title: 'Weicher Übergang (Standard)', desc: 'Sanfte, fließende Überblendung zwischen den Abschnitten' },
   { id: 'glow-bridge', title: 'Farb-Überblendung (Akzent)', desc: 'Weicher Übergang in den eingestellten Markenfarben' },
@@ -36,19 +72,19 @@ const COMPONENT_NAMES = {
 };
 
 const BUILDER_BLOCKS = [
-  { tag: 'gs-custom-block', blockType: 'layout', icon: '📐', label: 'Spalten-Layout' },
-  { tag: 'gs-custom-block', blockType: 'text', icon: '📝', label: 'Textblock' },
-  { tag: 'gs-custom-block', blockType: 'image', icon: '🖼', label: 'Bild' },
-  { tag: 'gs-custom-block', blockType: 'split', icon: '◧', label: 'Bild + Text' },
-  { tag: 'gs-custom-block', blockType: 'video', icon: '🎬', label: 'Video' },
-  { tag: 'gs-custom-block', blockType: 'buttons', icon: '🔘', label: 'Buttons' },
-  { tag: 'gs-custom-block', blockType: 'quote', icon: '❝', label: 'Zitat' },
-  { tag: 'gs-custom-block', blockType: 'faq', icon: '❓', label: 'FAQ / Accordion' },
-  { tag: 'gs-custom-block', blockType: 'spacer', icon: '―', label: 'Trenner / Abstand' },
-  { tag: 'gs-cta', blockType: '', icon: '📣', label: 'CTA-Banner' },
-  { tag: 'gs-feature-cards', blockType: '', icon: '✦', label: 'Features / Werte' },
-  { tag: 'gs-projects-grid', blockType: '', icon: '📁', label: 'Projekte-Grid' },
-  { tag: 'gs-team-grid', blockType: '', icon: '👥', label: 'Team-Grid' },
+  { tag: 'gs-custom-block', blockType: 'layout', icon: ci('grid', 14), label: 'Spalten-Layout' },
+  { tag: 'gs-custom-block', blockType: 'text', icon: ci('file', 14), label: 'Textblock' },
+  { tag: 'gs-custom-block', blockType: 'image', icon: ci('image', 14), label: 'Bild' },
+  { tag: 'gs-custom-block', blockType: 'split', icon: ci('grid', 14), label: 'Bild + Text' },
+  { tag: 'gs-custom-block', blockType: 'video', icon: ci('external', 14), label: 'Video' },
+  { tag: 'gs-custom-block', blockType: 'buttons', icon: ci('bolt', 14), label: 'Buttons' },
+  { tag: 'gs-custom-block', blockType: 'quote', icon: ci('book', 14), label: 'Zitat' },
+  { tag: 'gs-custom-block', blockType: 'faq', icon: ci('search', 14), label: 'FAQ / Accordion' },
+  { tag: 'gs-custom-block', blockType: 'spacer', icon: ci('list', 14), label: 'Trenner / Abstand' },
+  { tag: 'gs-cta', blockType: '', icon: ci('bell', 14), label: 'CTA-Banner' },
+  { tag: 'gs-feature-cards', blockType: '', icon: ci('sparkles', 14), label: 'Features / Werte' },
+  { tag: 'gs-projects-grid', blockType: '', icon: ci('folder', 14), label: 'Projekte-Grid' },
+  { tag: 'gs-team-grid', blockType: '', icon: ci('users', 14), label: 'Team-Grid' },
 ];
 
 const COMPONENT_TYPES = [
@@ -299,8 +335,16 @@ function syncPreview(scrollSecId = null) {
 function setPreviewFrameUrl(url) {
   const iframe = document.getElementById('cms-preview-iframe');
   const label = document.getElementById('cms-preview-url-label');
-  if (iframe && !iframe.src.endsWith(url)) {
-    iframe.src = url;
+  if (iframe) {
+    try {
+      const target = new URL(url, location.origin);
+      const current = iframe.src ? new URL(iframe.src, location.origin) : null;
+      if (!current || (current.pathname + current.search) !== (target.pathname + target.search)) {
+        iframe.src = url;
+      }
+    } catch {
+      if (!iframe.src.endsWith(url)) iframe.src = url;
+    }
   }
   if (label) {
     label.textContent = url.replace(/[?&]cms_preview=1/, '');
@@ -580,16 +624,16 @@ function renderApp() {
 
         <div class="cms-topbar__center">
           <nav class="cms-nav-pills">
-            <button type="button" class="cms-tab ${state.tab === 'dashboard' ? 'is-active' : ''}" data-tab="dashboard">Dashboard</button>
-            <button type="button" class="cms-tab ${state.tab === 'pages' ? 'is-active' : ''}" data-tab="pages">Seiten</button>
-            <button type="button" class="cms-tab ${state.tab === 'projects' ? 'is-active' : ''}" data-tab="projects">Projekte</button>
-            <button type="button" class="cms-tab ${state.tab === 'members' ? 'is-active' : ''}" data-tab="members">Mitglieder</button>
-            <button type="button" class="cms-tab ${state.tab === 'journal' ? 'is-active' : ''}" data-tab="journal">Journal</button>
+            <button type="button" class="cms-tab ${state.tab === 'dashboard' ? 'is-active' : ''}" data-tab="dashboard">${ci('dashboard', 14)} Dashboard</button>
+            <button type="button" class="cms-tab ${state.tab === 'pages' ? 'is-active' : ''}" data-tab="pages">${ci('file', 14)} Seiten</button>
+            <button type="button" class="cms-tab ${state.tab === 'projects' ? 'is-active' : ''}" data-tab="projects">${ci('briefcase', 14)} Projekte</button>
+            <button type="button" class="cms-tab ${state.tab === 'members' ? 'is-active' : ''}" data-tab="members">${ci('users', 14)} Mitglieder</button>
+            <button type="button" class="cms-tab ${state.tab === 'journal' ? 'is-active' : ''}" data-tab="journal">${ci('book', 14)} Journal</button>
             <button type="button" class="cms-tab ${state.tab === 'inbox' ? 'is-active' : ''}" data-tab="inbox">
-              Postfach ${unreadCount > 0 ? `<span id="cms-unread-pill" style="background:var(--accent); color:#fff; border-radius:99px; padding:0.05rem 0.42rem; font-size:10.5px; margin-left:0.25rem;">${unreadCount}</span>` : ''}
+              ${ci('mail', 14)} Postfach ${unreadCount > 0 ? `<span id="cms-unread-pill" style="background:var(--accent); color:#fff; border-radius:99px; padding:0.05rem 0.42rem; font-size:10.5px; margin-left:0.25rem;">${unreadCount}</span>` : ''}
             </button>
-            ${admin ? `<button type="button" class="cms-tab ${state.tab === 'framework' ? 'is-active' : ''}" data-tab="framework">System</button>` : ''}
-            <button type="button" class="cms-tab ${state.tab === 'media' ? 'is-active' : ''}" data-tab="media">Medien</button>
+            ${admin ? `<button type="button" class="cms-tab ${state.tab === 'framework' ? 'is-active' : ''}" data-tab="framework">${ci('settings', 14)} System</button>` : ''}
+            <button type="button" class="cms-tab ${state.tab === 'media' ? 'is-active' : ''}" data-tab="media">${ci('image', 14)} Medien</button>
           </nav>
         </div>
 
@@ -598,9 +642,9 @@ function renderApp() {
             <button type="button" class="cms-tab ${state.lang === 'de' ? 'is-active' : ''}" style="padding:0.28rem 0.6rem;" data-lang="de">DE</button>
             <button type="button" class="cms-tab ${state.lang === 'en' ? 'is-active' : ''}" style="padding:0.28rem 0.6rem;" data-lang="en">EN</button>
           </div>
-          <a href="${esc(cleanLiveUrl)}" target="_blank" class="btn btn--secondary btn--sm" style="white-space:nowrap;">↗ Live</a>
+          <a href="${esc(cleanLiveUrl)}" target="_blank" class="btn btn--secondary btn--sm" style="white-space:nowrap;">${ci('external', 13)} Live</a>
           <button type="button" class="btn btn--primary btn--sm" id="cms-save-btn" style="white-space:nowrap;">
-            ${state.dirty ? '● Speichern' : '✓ Gespeichert'}
+            ${state.dirty ? `${ci('upload', 13)} Speichern` : `${ci('check', 13)} Gespeichert`}
           </button>
           <button type="button" class="btn btn--secondary btn--sm" id="cms-logout-btn" style="white-space:nowrap;" title="Angemeldet als ${esc(state.user.name)} (${esc(state.user.email)}) · Rolle: ${roleLabel} – Klicken zum Abmelden">
             Abmelden <span style="opacity:0.65; font-size:10.5px;">· ${roleLabel}</span>
@@ -608,7 +652,7 @@ function renderApp() {
         </div>
       </header>
 
-      <div class="cms-workspace">
+      <div class="cms-workspace ${state.tab === 'media' ? 'is-media-mode' : ''}" id="cms-workspace">
         <aside class="cms-sidebar" id="cms-sidebar"></aside>
         <section class="cms-preview">
           <div class="cms-preview-bar">
@@ -810,6 +854,9 @@ function maybeShowChangelogModal() {
 }
 
 function renderSidebar(preserveScroll = true) {
+  // Workspace-Klasse für Vollbild-Medienmanager synchronisieren
+  const ws = document.getElementById('cms-workspace');
+  if (ws) ws.classList.toggle('is-media-mode', state.tab === 'media');
   const sidebar = document.getElementById('cms-sidebar');
   if (!sidebar) return;
   const prevTop = preserveScroll ? sidebar.scrollTop : 0;
@@ -857,7 +904,7 @@ function renderDashboardSidebar(sidebar) {
     <div style="display:flex; flex-direction:column; gap:0.85rem;">
       <div>
         <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--fg-subtle);">Willkommen zurück</div>
-        <h2 style="font-family:var(--font-display); font-size:1.25rem; margin:0.15rem 0 0.25rem;">Hallo, ${esc(state.user?.name || 'Team')} 👋</h2>
+        <h2 style="font-family:var(--font-display); font-size:1.25rem; margin:0.15rem 0 0.25rem;">Hallo, ${esc(state.user?.name || 'Team')}</h2>
         <div style="font-size:12px; color:var(--fg-muted);">
           Rolle: <strong>${admin ? 'Admin' : 'Editor'}</strong> · CMSS <strong>v${esc(verVal)}</strong> · Tipp: <code>⌘K</code> / <code>Strg+K</code>
         </div>
@@ -865,8 +912,8 @@ function renderDashboardSidebar(sidebar) {
 
       ${upd.hasUpdate ? `
         <div class="cms-upload-box" style="border-color:rgba(45,205,255,0.55); background:rgba(45,205,255,0.08);">
-          <div style="font-size:12.5px; font-weight:700; color:#2dcdff; margin-bottom:0.25rem;">
-            🚀 Neues CMSS-Update verfügbar (v${esc(upd.latestVersion || '')})
+          <div style="font-size:12.5px; font-weight:700; color:#2dcdff; margin-bottom:0.25rem; display:flex; align-items:center; gap:0.4rem;">
+            ${ci('rocket', 15)} Neues CMSS-Update verfügbar (v${esc(upd.latestVersion || '')})
           </div>
           <div style="font-size:12px; color:var(--fg-muted); line-height:1.45; margin-bottom:0.65rem;">
             ${upd.latestTitle ? `<strong>${esc(upd.latestTitle)}</strong><br/>` : ''}
@@ -874,7 +921,7 @@ function renderDashboardSidebar(sidebar) {
           </div>
           <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
             <a href="${esc(discordUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--sm" style="flex:1; justify-content:center; text-decoration:none;">
-              💬 Zum Discord
+              ${ci('external', 13)} Zum Discord
             </a>
             ${admin ? `<button type="button" class="btn btn--secondary btn--sm" id="cms-dash-go-export">Update einspielen</button>` : ''}
           </div>
@@ -882,8 +929,8 @@ function renderDashboardSidebar(sidebar) {
       ` : `
         <div class="cms-acc" style="padding:0.65rem 0.8rem;">
           <div style="font-size:12px; color:var(--fg-muted); line-height:1.45;">
-            ✓ System ist aktuell (<strong>v${esc(verVal)}</strong>). Neue Updates findest du immer auf unserem
-            <a href="${esc(discordUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:none; font-weight:600;">Discord ↗</a>.
+            ${ci('check', 13)} System ist aktuell (<strong>v${esc(verVal)}</strong>). Neue Updates findest du immer auf unserem
+            <a href="${esc(discordUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:none; font-weight:600;">Discord</a>.
           </div>
         </div>
       `}
@@ -894,58 +941,58 @@ function renderDashboardSidebar(sidebar) {
             <div style="font-size:1.1rem; font-weight:700;">${pageCount}</div>
             <div class="cms-row-card__meta">Seiten</div>
           </div>
-          <span>📄</span>
+          <span style="color:var(--fg-muted);">${ci('file', 18)}</span>
         </button>
         <button type="button" class="cms-row-card" data-dash-tab="projects" style="padding:0.65rem 0.75rem; text-align:left; cursor:pointer;">
           <div>
             <div style="font-size:1.1rem; font-weight:700;">${projCount}</div>
             <div class="cms-row-card__meta">Projekte</div>
           </div>
-          <span>📁</span>
+          <span style="color:var(--fg-muted);">${ci('briefcase', 18)}</span>
         </button>
         <button type="button" class="cms-row-card" data-dash-tab="members" style="padding:0.65rem 0.75rem; text-align:left; cursor:pointer;">
           <div>
             <div style="font-size:1.1rem; font-weight:700;">${memCount}</div>
             <div class="cms-row-card__meta">Mitglieder</div>
           </div>
-          <span>👥</span>
+          <span style="color:var(--fg-muted);">${ci('users', 18)}</span>
         </button>
         <button type="button" class="cms-row-card" data-dash-tab="journal" style="padding:0.65rem 0.75rem; text-align:left; cursor:pointer;">
           <div>
             <div style="font-size:1.1rem; font-weight:700;">${jourCount}</div>
             <div class="cms-row-card__meta">Journal-Posts</div>
           </div>
-          <span>📰</span>
+          <span style="color:var(--fg-muted);">${ci('book', 18)}</span>
         </button>
         <button type="button" class="cms-row-card" data-dash-tab="inbox" style="padding:0.65rem 0.75rem; text-align:left; cursor:pointer;">
           <div>
             <div style="font-size:1.1rem; font-weight:700;">${unreadCount}</div>
             <div class="cms-row-card__meta">Ungelesen</div>
           </div>
-          <span>📬</span>
+          <span style="color:var(--fg-muted);">${ci('mail', 18)}</span>
         </button>
         <button type="button" class="cms-row-card" data-dash-tab="media" style="padding:0.65rem 0.75rem; text-align:left; cursor:pointer;">
           <div>
             <div style="font-size:1.1rem; font-weight:700;">${state.images.length}</div>
             <div class="cms-row-card__meta">Medien${unusedCount ? ` (${unusedCount} frei)` : ''}</div>
           </div>
-          <span>🖼</span>
+          <span style="color:var(--fg-muted);">${ci('image', 18)}</span>
         </button>
       </div>
 
       <div style="display:flex; flex-direction:column; gap:0.45rem;">
         <button type="button" class="btn btn--primary btn--sm" id="cms-dash-edit-pages" style="width:100%; justify-content:center;">
-          ✏️ Seiten &amp; Bausteine bearbeiten
+          ${ci('file', 14)} Seiten &amp; Bausteine bearbeiten
         </button>
         <button type="button" class="btn btn--secondary btn--sm" id="cms-dash-new-post" style="width:100%; justify-content:center;">
-          + Neuen Journal-Artikel schreiben
+          ${ci('plus', 14)} Neuen Journal-Artikel schreiben
         </button>
         <button type="button" class="btn btn--secondary btn--sm" id="cms-dash-cmdk" style="width:100%; justify-content:center;">
-          ⌘K Befehlspalette öffnen
+          ${ci('search', 14)} Befehlspalette öffnen (⌘K)
         </button>
         ${admin && state.hasControlHub ? `
           <a href="/control/" class="btn btn--secondary btn--sm" style="width:100%; justify-content:center; text-decoration:none; border-color:rgba(45,205,255,0.4); color:#2dcdff;">
-            🛡️ Control Hub (/control/) öffnen
+            ${ci('shield', 14)} Control Hub (/control/) öffnen
           </a>
         ` : ''}
       </div>
@@ -1002,20 +1049,20 @@ function renderPagesOverview(sidebar) {
           <div>
             <div class="cms-row-card__title">${esc(COMPONENT_NAMES[sec.component] || sec.component)}</div>
             <div class="cms-row-card__meta">
-              <span>◐ ${esc(transitionTitle(sec.transition || 'none'))}${sec.bgMedia ? ' · 🖼 Hintergrund aktiv' : ''}</span>
+              <span>◐ ${esc(transitionTitle(sec.transition || 'none'))}${sec.bgMedia ? ' · Hintergrund aktiv' : ''}</span>
             </div>
           </div>
           <div class="cms-row-card__actions">
             <button type="button" class="cms-icon-btn" data-sec-up="${idx}" title="Nach oben">↑</button>
             <button type="button" class="cms-icon-btn" data-sec-down="${idx}" title="Nach unten">↓</button>
-            <button type="button" class="cms-icon-btn" data-sec-vis="${idx}" title="Ein-/Ausblenden">${sec.visible === false ? '🚫' : '👁'}</button>
+            <button type="button" class="cms-icon-btn" data-sec-vis="${idx}" title="Ein-/Ausblenden">${sec.visible === false ? ci('warning', 13) : ci('check', 13)}</button>
           </div>
         </div>
       `).join('')}
     </div>
 
     <div class="cms-field" style="margin-top:auto; padding-top:1rem; border-top:1px solid var(--border);">
-      <label>🧩 Bausteine <span class="hint">in die Vorschau ziehen oder klicken</span></label>
+      <label>${ci('grid', 13)} Bausteine <span class="hint">in die Vorschau ziehen oder klicken</span></label>
       <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:0.4rem; margin-bottom:0.65rem;">
         ${BUILDER_BLOCKS.map((b, bi) => `
           <button
@@ -1038,7 +1085,7 @@ function renderPagesOverview(sidebar) {
     </div>
 
     <details class="cms-acc" style="margin-top:0.5rem;">
-      <summary><span>🔍 SEO &amp; OpenGraph (${esc(state.lang.toUpperCase())})</span><span>▾</span></summary>
+      <summary><span style="display:inline-flex;align-items:center;gap:0.4rem;">${ci('search', 14)} SEO &amp; OpenGraph (${esc(state.lang.toUpperCase())})</span><span>▾</span></summary>
       <div class="cms-acc__body">
         <div class="cms-field">
           <label>Seitentitel (&lt;title&gt; / og:title)</label>
@@ -1057,7 +1104,7 @@ function renderPagesOverview(sidebar) {
 
     ${(state.selectedPageKey === 'imprint' || state.selectedPageKey === 'privacy') ? `
       <details class="cms-acc">
-        <summary><span>⚖️ Rechtstext direkt bearbeiten (${esc(state.lang.toUpperCase())})</span><span>▾</span></summary>
+        <summary><span style="display:inline-flex;align-items:center;gap:0.4rem;">${ci('file', 14)} Rechtstext direkt bearbeiten (${esc(state.lang.toUpperCase())})</span><span>▾</span></summary>
         <div class="cms-acc__body">
           <p style="font-size:11.5px; color:var(--fg-muted); margin:0 0 0.45rem;">
             Optional: Wenn ausgefüllt, überschreibt dieser HTML-Text den statischen Text in der HTML-Datei. Leer lassen = statische HTML-Datei bleibt aktiv.
@@ -1835,14 +1882,14 @@ function renderCleanSectionContentHtml(sec, pagesData, key) {
         <label>Baustein-Typ</label>
         <select id="cms-cb-type">
           ${[
-            ['layout', '📐 Spalten-Layout (1–4 Spalten)'],
-            ['text', '📝 Textblock'],
-            ['image', '🖼 Bild'],
+            ['layout', 'Spalten-Layout (1–4 Spalten)'],
+            ['text', 'Textblock'],
+            ['image', 'Bild'],
             ['split', '◧ Bild + Text (2-Spalten)'],
-            ['video', '🎬 Video (MP4 / YouTube)'],
-            ['buttons', '🔘 Buttons'],
-            ['quote', '❝ Zitat'],
-            ['faq', '❓ FAQ / Accordion'],
+            ['video', 'Video (MP4 / YouTube)'],
+            ['buttons', 'Buttons'],
+            ['quote', 'Zitat'],
+            ['faq', 'FAQ / Accordion'],
             ['spacer', '― Trenner / Abstand'],
           ].map(([v, l]) => `<option value="${v}" ${bType === v ? 'selected' : ''}>${l}</option>`).join('')}
         </select>
@@ -1871,12 +1918,12 @@ function renderCleanSectionContentHtml(sec, pagesData, key) {
             <span>Elemente im Layout (${(cb.items || []).length})</span>
             <select id="cms-cb-layout-add" style="width:auto; font-size:11.5px; padding:0.2rem 0.4rem;">
               <option value="">+ Element einfügen…</option>
-              <option value="text">📝 Textblock</option>
-              <option value="image">🖼 Bild</option>
-              <option value="video">🎬 Video</option>
-              <option value="buttons">🔘 Buttons</option>
-              <option value="quote">❝ Zitat</option>
-              <option value="faq">❓ FAQ</option>
+              <option value="text">Textblock</option>
+              <option value="image">Bild</option>
+              <option value="video">Video</option>
+              <option value="buttons">Buttons</option>
+              <option value="quote">Zitat</option>
+              <option value="faq">FAQ</option>
             </select>
           </label>
           <div style="display:flex; flex-direction:column; gap:0.5rem;">
@@ -2005,7 +2052,7 @@ function renderCleanSectionContentHtml(sec, pagesData, key) {
         </select>
       </div>
       <div class="cms-upload-box" style="margin-top:0.35rem;">
-        <div style="font-size:12.5px; font-weight:600; color:#fff;">📬 Postfach & Discord-Benachrichtigungen</div>
+        <div style="font-size:12.5px; font-weight:600; color:#fff;">${ci('mail', 14)} Postfach &amp; Discord-Benachrichtigungen</div>
         <div style="font-size:12px; color:var(--fg-muted);">
           Eingänge im Postfach: <strong>${(state.submissions || []).length}</strong> ${unread > 0 ? `(${unread} ungelesen)` : ''}<br/>
           Discord Webhook: <strong style="color:${hasWebhook ? '#34d399' : '#fbbf24'};">${hasWebhook ? 'Aktiv' : 'Deaktiviert / Nicht gesetzt'}</strong>
@@ -3229,7 +3276,7 @@ function renderJournalSidebar(sidebar) {
       <label>
         <span>Artikel-Inhalt (Markdown)</span>
         <button type="button" id="cms-toggle-md-img-box" style="background:rgba(186,82,186,0.16); border:1px solid rgba(186,82,186,0.4); color:#f5d0fe; border-radius:6px; padding:0.2rem 0.55rem; font-size:11.5px; font-weight:600; cursor:pointer;">
-          🖼 + Bild in Text einbauen
+          ${ci('image', 13)} + Bild in Text einbauen
         </button>
       </label>
 
@@ -3280,7 +3327,7 @@ function renderJournalSidebar(sidebar) {
         <button type="button" class="cms-icon-btn" data-md-act="quote" title="Zitat (> Text)" style="width:auto; padding:0 0.45rem;">❝ Zitat</button>
         <button type="button" class="cms-icon-btn" data-md-act="ul" title="Aufzählung (- Punkt)" style="width:auto; padding:0 0.45rem;">• Liste</button>
         <button type="button" class="cms-icon-btn" data-md-act="ol" title="Nummerierte Liste (1. Punkt)" style="width:auto; padding:0 0.45rem;">1. Liste</button>
-        <button type="button" class="cms-icon-btn" data-md-act="link" title="Link ([Text](https://...))" style="width:auto; padding:0 0.45rem;">🔗 Link</button>
+        <button type="button" class="cms-icon-btn" data-md-act="link" title="Link ([Text](https://...))" style="width:auto; padding:0 0.45rem;">Link</button>
         <button type="button" class="cms-icon-btn" data-md-act="code" title="Code-Block" style="width:auto; padding:0 0.45rem;">&lt;/&gt;</button>
         <button type="button" class="cms-icon-btn" data-md-act="hr" title="Horizontale Trennlinie (---)" style="width:auto; padding:0 0.45rem;">― Linie</button>
       </div>
@@ -3709,7 +3756,7 @@ function renderInboxSidebar(sidebar) {
 
     body.innerHTML = `
       <div class="cms-upload-box">
-        <div style="font-size:13px; font-weight:600; color:#fff;">🔔 Discord Webhook für Formular-Einsendungen</div>
+        <div style="font-size:13px; font-weight:600; color:#fff;">${ci('bell', 14)} Discord Webhook für Formular-Einsendungen</div>
         <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
           Hier legst du fest, an welchen Discord-Server/Kanal neue Kontakt- und Bewerbungs-Einsendungen geschickt werden.
           <strong>Wichtig für andere Webseiten auf diesem Framework:</strong> Trage hier einfach den eigenen Discord-Webhook der jeweiligen Webseite ein (oder leere das Feld), damit Einsendungen nicht auf dem Gamet Studios Discord landen!
@@ -3753,7 +3800,7 @@ function renderInboxSidebar(sidebar) {
       </div>
 
       <div class="cms-upload-box">
-        <div style="font-size:13px; font-weight:600; color:#fff;">🛡 Cloudflare Turnstile (CAPTCHA Spam-Schutz)</div>
+        <div style="font-size:13px; font-weight:600; color:#fff;">${ci('shield', 14)} Cloudflare Turnstile (CAPTCHA Spam-Schutz)</div>
         <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
           Schützt Kontakt- und Bewerbungsformulare vor Spam-Bots. Sobald beide Keys aus dem Cloudflare-Dashboard eingetragen sind, erscheint das Turnstile-Widget automatisch in allen Formularen und wird serverseitig geprüft.
         </p>
@@ -3782,9 +3829,9 @@ function renderInboxSidebar(sidebar) {
 
       <div class="cms-upload-box" style="margin-bottom:0.75rem; border-color:rgba(45,205,255,0.35);">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
-          <div style="font-size:13px; font-weight:600; color:#fff;">✨ Google Gemini 3.8 Flash (Auto-SEO &amp; GEO)</div>
+          <div style="font-size:13px; font-weight:600; color:#fff; display:flex; align-items:center; gap:0.4rem;">${ci('sparkles', 15)} Google Gemini 3.8 Flash (Auto-SEO &amp; GEO)</div>
           <span style="font-size:11px; color:${sys.gemini_api_key_set ? '#4ade80' : 'var(--fg-subtle)'}; font-weight:600;">
-            ${sys.gemini_api_key_set ? '✓ Key sicher hinterlegt' : '● Kein Key'}
+            ${sys.gemini_api_key_set ? `${ci('check', 12)} Key sicher hinterlegt` : 'Kein Key'}
           </span>
         </div>
         <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
@@ -3801,7 +3848,7 @@ function renderInboxSidebar(sidebar) {
           <span class="hint">Wird nur serverseitig in der geschützten SQLite-DB gespeichert und niemals an Browser ausgeliefert. Key über <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> erstellen.</span>
         </div>
         <button type="button" class="btn btn--secondary btn--sm" id="cms-run-gemini-btn" style="width:100%; justify-content:center;">
-          ✨ Jetzt testen &amp; SEO/GEO generieren
+          ${ci('sparkles', 13)} Jetzt testen &amp; SEO/GEO generieren
         </button>
         <div id="cms-gemini-feedback" style="font-size:11.5px; color:var(--fg-muted); margin-top:0.25rem;">
           ${(() => {
@@ -3819,7 +3866,7 @@ function renderInboxSidebar(sidebar) {
           ✓ Einstellungen (Webhook, Turnstile &amp; Gemini) speichern
         </button>
         <button type="button" class="btn btn--secondary btn--sm" id="cms-test-webhook-btn" style="width:100%; justify-content:center;">
-          🔔 Test-Nachricht an Discord senden
+          ${ci('bell', 13)} Test-Nachricht an Discord senden
         </button>
       </div>
     `;
@@ -3875,7 +3922,7 @@ function renderInboxSidebar(sidebar) {
       syncSysInputs();
       const btn = document.getElementById('cms-run-gemini-btn');
       const fb = document.getElementById('cms-gemini-feedback');
-      if (btn) { btn.disabled = true; btn.textContent = '✨ Gemini 3.8 Flash analysiert…'; }
+      if (btn) { btn.disabled = true; btn.textContent = 'Gemini 3.8 Flash analysiert…'; }
       if (fb) fb.textContent = 'Anfrage an Google Gemini 3.8 Flash läuft…';
       try {
         const res = await fetch('/api/cms.php', {
@@ -3907,7 +3954,7 @@ function renderInboxSidebar(sidebar) {
       } catch (err) {
         if (fb) fb.innerHTML = `<span style="color:var(--danger);">${esc(err?.message || 'Netzwerkfehler')}</span>`;
       }
-      if (btn) { btn.disabled = false; btn.textContent = '✨ Jetzt testen & SEO/GEO generieren'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Jetzt testen & SEO/GEO generieren'; }
     });
 
     document.getElementById('cms-test-webhook-btn')?.addEventListener('click', async (e) => {
@@ -3924,7 +3971,7 @@ function renderInboxSidebar(sidebar) {
         }),
       });
       const data = await res.json();
-      btn.textContent = '🔔 Test-Nachricht an Discord senden';
+      btn.innerHTML = `${ci('bell', 13)} Test-Nachricht an Discord senden`;
       if (data.ok) {
         toast('✓ Test-Nachricht erfolgreich an Discord gesendet!');
       } else {
@@ -3945,7 +3992,7 @@ function renderInboxSidebar(sidebar) {
 
     body.innerHTML = `
       <details class="cms-acc" open>
-        <summary><span>🔐 Authentik SSO (OIDC) – Haupt-Login</span><span>▾</span></summary>
+        <summary><span>${ci('shield', 14)} Authentik SSO (OIDC) – Haupt-Login</span><span>▾</span></summary>
         <div class="cms-acc__body">
           <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0 0 0.65rem;">
             Verbinde deine Authentik-Instanz per OpenID Connect. Sobald aktiviert, wird <strong>Authentik als Haupt-Login</strong> verwendet.
@@ -4676,29 +4723,29 @@ function renderFrameworkSidebar(sidebar) {
   } else {
     body.innerHTML = `
       <div class="cms-upload-box">
-        <div style="font-size:13px; font-weight:600; color:#fff;">✨ Blanko GS CMSS Framework Export (.zip)</div>
+        <div style="font-size:13px; font-weight:600; color:#fff; display:flex; align-items:center; gap:0.4rem;">${ci('sparkles', 15)} Blanko GS CMSS Framework Export (.zip)</div>
         <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
           Exportiert eine komplett eigenständige, leere Starter-Webseite inkl. <strong>SETUP.md</strong>, 3 Platzhalter-Seiten, <strong>leerer Datenbank (0 Accounts → automatischer Admin-Aufsetz-Screen)</strong> und allen aktuellen CMSS-Features.
         </p>
         <a href="/api/cms.php?action=export_blanko_framework_zip" class="btn btn--primary btn--sm" style="width:100%; justify-content:center; text-decoration:none;">
-          ↓ Blanko GS CMSS Framework (.zip) herunterladen
+          ${ci('download', 14)} Blanko GS CMSS Framework (.zip) herunterladen
         </a>
       </div>
 
       ${state.hasControlHub ? `
         <div class="cms-upload-box" style="border-color:rgba(45,205,255,0.35);">
-          <div style="font-size:13px; font-weight:600; color:#fff;">🛠️ Gamet Studios Engine-Basis (.zip)</div>
+          <div style="font-size:13px; font-weight:600; color:#fff; display:flex; align-items:center; gap:0.4rem;">${ci('wrench', 15)} Gamet Studios Engine-Basis (.zip)</div>
           <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
             Exportiert nur die reine <strong>App-Engine</strong> (<code>includes/engine.php</code>, <code>api/app.php</code>, <code>assets/js/core/engine.js</code>, Auth/OIDC, SQLite App-Store &amp; Beispiel-App unter <code>apps/example-notes/</code>) für eigene Projekte ohne CMSS-Seiteninhalte.
           </p>
           <a href="/api/cms.php?action=export_engine_zip" class="btn btn--secondary btn--sm" style="width:100%; justify-content:center; text-decoration:none;">
-            ↓ Standalone Engine (.zip) herunterladen
+            ${ci('download', 14)} Standalone Engine (.zip) herunterladen
           </a>
         </div>
       ` : ''}
 
       <div class="cms-upload-box">
-        <div style="font-size:13px; font-weight:600; color:#fff;">📦 Komplettes Webseiten-Backup (.zip)</div>
+        <div style="font-size:13px; font-weight:600; color:#fff; display:flex; align-items:center; gap:0.4rem;">${ci('package', 15)} Komplettes Webseiten-Backup (.zip)</div>
         <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
           Sichert oder überträgt <strong>alles</strong> in einer einzigen ZIP-Datei: alle Seiten, Texte, Journal-Posts, Logos, Bilder, Videos sowie die komplette Datenbank (Accounts, Postfach, Discord-Webhook &amp; Turnstile).
         </p>
@@ -4713,7 +4760,7 @@ function renderFrameworkSidebar(sidebar) {
       </div>
 
       <div class="cms-upload-box" style="border-color:rgba(186,82,186,0.45);">
-        <div style="font-size:13px; font-weight:600; color:#fff;">⚡ Schlaues CMSS Core-Update (.zip)</div>
+        <div style="font-size:13px; font-weight:600; color:#fff;">${ci('bolt', 14)} Schlaues CMSS Core-Update (.zip)</div>
         <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
           Der <strong>einfachste Weg für Framework-Updates</strong>: Exportiere hier die reinen Systemordner (<code>cms/</code>, <code>api/</code>, <code>includes/</code>, <code>assets/js/</code>, <code>assets/css/</code>, <code>tools/</code>, <code>admin/</code>) ohne Daten/Bilder/Datenbank — und spiele sie auf jeder anderen Seite ein, ohne dass deren Inhalte überschrieben werden.
         </p>
@@ -4879,15 +4926,15 @@ function renderFrameworkSidebar(sidebar) {
       ${state.hasControlHub ? `
         <div class="cms-upload-box" style="border-color:rgba(45,205,255,0.45);">
           <div style="font-size:12px; color:var(--fg-muted); margin-bottom:0.5rem;">
-            <strong>🛡️ CMSS Control Hub</strong> — Alle verbundenen Webseiten ansehen, anpingen oder remote sperren/freigeben.
+            <strong>${ci('shield', 14)} CMSS Control Hub</strong> — Alle verbundenen Webseiten ansehen, anpingen oder remote sperren/freigeben.
           </div>
           <a href="/control/" class="btn btn--primary btn--sm" style="width:100%; justify-content:center; text-decoration:none;">
-            🛡️ Control Hub öffnen (/control/)
+            ${ci('shield', 14)} Control Hub öffnen (/control/)
           </a>
         </div>
       ` : ''}
       <details class="cms-acc" open>
-        <summary><span>🛠️ Wartungsmodus</span><span>▾</span></summary>
+        <summary><span style="display:inline-flex;align-items:center;gap:0.4rem;">${ci('wrench', 14)} Wartungsmodus</span><span>▾</span></summary>
         <div class="cms-acc__body">
           <label style="display:flex; align-items:center; gap:0.5rem; font-size:12.5px; cursor:pointer; margin-bottom:0.6rem;">
             <input type="checkbox" id="cms-maint-enabled" ${maint.enabled ? 'checked' : ''} />
@@ -4901,7 +4948,7 @@ function renderFrameworkSidebar(sidebar) {
       </details>
 
       <details class="cms-acc">
-        <summary><span>🔀 Redirect-Manager (${redirects.length})</span><span>▾</span></summary>
+        <summary><span style="display:inline-flex;align-items:center;gap:0.4rem;">${ci('refresh', 14)} Redirect-Manager (${redirects.length})</span><span>▾</span></summary>
         <div class="cms-acc__body">
           <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.6rem;">
             ${redirects.map((r, i) => `
@@ -4918,12 +4965,12 @@ function renderFrameworkSidebar(sidebar) {
       </details>
 
       <details class="cms-acc" open>
-        <summary><span>🩺 System-Health-Check (${health.filter((h) => h.ok).length}/${health.length})</span><span>▾</span></summary>
+        <summary><span style="display:inline-flex;align-items:center;gap:0.4rem;">${ci('shield', 14)} System-Health-Check (${health.filter((h) => h.ok).length}/${health.length})</span><span>▾</span></summary>
         <div class="cms-acc__body">
           <div style="display:flex; flex-direction:column; gap:0.45rem;">
             ${health.map((h) => `
               <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; font-size:12px; padding:0.35rem 0.5rem; border-radius:6px; background:var(--bg-card);">
-                <span>${h.ok ? '✅' : '⚠️'} <strong>${esc(h.label)}</strong></span>
+                <span>${h.ok ? ci('check', 13) : ci('warning', 13)} <strong>${esc(h.label)}</strong></span>
                 <span style="color:${h.ok ? 'var(--fg-muted)' : '#fbbf24'}; font-size:11px; text-align:right;">${esc(h.detail)}</span>
               </div>
             `).join('')}
@@ -4932,7 +4979,7 @@ function renderFrameworkSidebar(sidebar) {
       </details>
 
       <details class="cms-acc">
-        <summary><span>⏪ Snapshots &amp; 1-Klick-Rollback (${snaps.length})</span><span>▾</span></summary>
+        <summary><span style="display:inline-flex;align-items:center;gap:0.4rem;">${ci('refresh', 14)} Snapshots &amp; 1-Klick-Rollback (${snaps.length})</span><span>▾</span></summary>
         <div class="cms-acc__body">
           ${snaps.length === 0 ? '<p style="font-size:12px; color:var(--fg-muted); margin:0;">Noch keine Snapshots vorhanden. Beim nächsten Speichern wird automatisch einer erstellt.</p>' : `
             <div style="display:flex; flex-direction:column; gap:0.4rem;">
@@ -4951,7 +4998,7 @@ function renderFrameworkSidebar(sidebar) {
       </details>
 
       <details class="cms-acc">
-        <summary><span>📜 Audit-Log (${logs.length})</span><span>▾</span></summary>
+        <summary><span style="display:inline-flex;align-items:center;gap:0.4rem;">${ci('list', 14)} Audit-Log (${logs.length})</span><span>▾</span></summary>
         <div class="cms-acc__body">
           <div style="display:flex; flex-direction:column; gap:0.35rem; max-height:240px; overflow:auto;">
             ${logs.length === 0 ? '<p style="font-size:12px; color:var(--fg-muted); margin:0;">Noch keine Einträge.</p>' : logs.map((l) => `
@@ -5023,7 +5070,7 @@ function renderFrameworkSidebar(sidebar) {
    ========================================================================== */
 function renderMediaSidebar(sidebar) {
   const FOLDER_DEFS = [
-    { key: 'backgrounds', label: 'Hintergründe (Bilder & Videos)' },
+    { key: 'backgrounds', label: 'Hintergründe' },
     { key: 'icons', label: 'Logos & Icons' },
     { key: 'projects', label: 'Projekte' },
     { key: 'members', label: 'Mitglieder' },
@@ -5032,87 +5079,239 @@ function renderMediaSidebar(sidebar) {
   ];
 
   const activeFilter = state.mediaFolderFilter || 'all';
-  const visibleFolders = activeFilter === 'all'
-    ? FOLDER_DEFS
-    : FOLDER_DEFS.filter((f) => f.key === activeFilter);
-
+  const viewMode = state.mediaViewMode || 'list';
+  const query = (state.mediaSearch || '').trim().toLowerCase();
+  const onlyUnused = Boolean(state.mediaOnlyUnused);
   const unusedSet = new Set(state.unusedImages || []);
+
+  const filteredItems = (state.images || []).filter((img) => {
+    if (activeFilter !== 'all' && img.folder !== activeFilter) return false;
+    if (onlyUnused && !unusedSet.has(img.url)) return false;
+    if (query && !`${img.name} ${img.url} ${img.folder}`.toLowerCase().includes(query)) return false;
+    return true;
+  });
+
+  const isVid = (img) => img.type === 'video' || /\.(mp4|webm|mov)$/i.test(img.url);
+
   const renderMediaCard = (img) => `
-    <div class="cms-acc" style="padding:0.5rem; display:flex; flex-direction:column; gap:0.4rem; min-width:0; overflow:hidden; ${unusedSet.has(img.url) ? 'border-color:rgba(245,158,11,0.45);' : ''}">
-      ${img.type === 'video' || /\.(mp4|webm|mov)$/i.test(img.url)
-        ? `<video src="${esc(img.url)}" muted loop playsinline preload="metadata" onmouseenter="this.play().catch(()=>{})" onmouseleave="this.pause()" style="width:100%; height:84px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;"></video>`
-        : `<img src="${esc(img.url)}" alt="${esc(img.name)}" style="width:100%; height:84px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;" loading="lazy" decoding="async" />`
+    <div class="cms-acc" draggable="true" data-drag-media="${esc(img.url)}" data-drag-folder="${esc(img.folder)}" style="padding:0.55rem; display:flex; flex-direction:column; gap:0.45rem; min-width:0; overflow:hidden; cursor:grab; ${unusedSet.has(img.url) ? 'border-color:rgba(245,158,11,0.45);' : ''}">
+      ${isVid(img)
+        ? `<video src="${esc(img.url)}" muted loop playsinline preload="metadata" onmouseenter="this.play().catch(()=>{})" onmouseleave="this.pause()" style="width:100%; height:130px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;"></video>`
+        : `<img src="${esc(img.url)}" alt="${esc(img.name)}" style="width:100%; height:130px; object-fit:cover; border-radius:6px; background:var(--bg-elev-2); display:block;" loading="lazy" decoding="async" />`
       }
-      <div style="font-family:var(--font-mono); font-size:10.5px; color:var(--fg-subtle); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(img.name)}">${esc(img.name)}</div>
-      ${unusedSet.has(img.url) ? `<div style="font-size:10px; color:#fbbf24;">⚠ Ungenutzt</div>` : ''}
+      <div style="font-size:12px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(img.name)}">${esc(img.name)}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:10.5px; color:var(--fg-subtle);">
+        <span>${esc(img.folder)}</span>
+        ${unusedSet.has(img.url)
+          ? `<span style="color:#fbbf24; display:inline-flex; align-items:center; gap:0.2rem;">${ci('warning', 11)} Ungenutzt</span>`
+          : `<span style="color:#4ade80;">Aktiv</span>`}
+      </div>
       <div style="display:flex; gap:0.3rem; min-width:0;">
-        <button type="button" class="btn btn--secondary btn--sm" data-copy-img="${esc(img.url)}" title="Pfad kopieren" style="flex:1; min-width:0; font-size:11px; padding:0.32rem 0.4rem;">Kopieren</button>
-        <button type="button" class="btn btn--secondary btn--sm" data-del-img="${esc(img.url)}" data-del-img-name="${esc(img.name)}" title="Datei endgültig löschen" style="flex-shrink:0; font-size:11px; padding:0.32rem 0.45rem; color:var(--danger);">🗑</button>
+        <button type="button" class="btn btn--secondary btn--sm" data-copy-img="${esc(img.url)}" title="Pfad kopieren" style="flex:1; min-width:0; font-size:11px; padding:0.32rem 0.4rem;">${ci('copy', 12)} Kopieren</button>
+        <button type="button" class="btn btn--secondary btn--sm" data-del-img="${esc(img.url)}" data-del-img-name="${esc(img.name)}" title="Datei endgültig löschen" style="flex-shrink:0; font-size:11px; padding:0.32rem 0.5rem; color:var(--danger);">${ci('trash', 12)}</button>
       </div>
     </div>
   `;
+
+  const renderMediaRow = (img) => `
+    <div class="cms-media-list-row" draggable="true" data-drag-media="${esc(img.url)}" data-drag-folder="${esc(img.folder)}" style="cursor:grab;">
+      ${img.isVideo || isVid(img)
+        ? `<video src="${esc(img.url)}" muted style="width:40px; height:40px; object-fit:cover; border-radius:6px; background:#000;"></video>`
+        : `<img src="${esc(img.url)}" alt="${esc(img.name)}" loading="lazy" style="width:40px; height:40px; object-fit:cover; border-radius:6px; background:#0a0a0c;" />`}
+      <div style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; color:#fff;">${esc(img.name)}</div>
+      <div style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-family:var(--font-mono); font-size:11px; color:var(--fg-muted);">${esc(img.url)}</div>
+      <div>${unusedSet.has(img.url)
+        ? `<span style="color:#fbbf24; font-size:11px; display:inline-flex; align-items:center; gap:0.2rem;">${ci('warning', 12)} Ungenutzt</span>`
+        : `<span style="color:#4ade80; font-size:11px; display:inline-flex; align-items:center; gap:0.2rem;">${ci('check', 12)} Aktiv</span>`}</div>
+      <div style="display:flex; justify-content:flex-end; gap:0.3rem;">
+        <button type="button" class="btn btn--secondary btn--sm" data-copy-img="${esc(img.url)}" style="font-size:11px; padding:0.28rem 0.55rem;">${ci('copy', 12)} Pfad</button>
+        <button type="button" class="btn btn--secondary btn--sm" data-del-img="${esc(img.url)}" data-del-img-name="${esc(img.name)}" style="font-size:11px; padding:0.28rem 0.45rem; color:var(--danger);">${ci('trash', 12)}</button>
+      </div>
+    </div>
+  `;
+
+  const visibleFolders = activeFilter === 'all' ? FOLDER_DEFS : FOLDER_DEFS.filter((f) => f.key === activeFilter);
+  const renderFolderListView = () => {
+    const groups = visibleFolders.map((f) => {
+      const items = filteredItems.filter((img) => img.folder === f.key);
+      return `
+        <details class="cms-acc cms-media-drop-zone" data-drop-folder="${esc(f.key)}" open style="margin-bottom:0.65rem;">
+          <summary style="cursor:pointer;">
+            <span style="display:inline-flex; align-items:center; gap:0.45rem; font-weight:600;">
+              ${ci('folder', 15)} ${esc(f.label)}
+              <span style="font-family:var(--font-mono); font-size:11px; color:var(--fg-subtle); font-weight:400;">/${esc(f.key === 'icons' ? 'assets/icons' : 'assets/images/' + f.key)}/</span>
+            </span>
+            <span style="font-size:11.5px; color:var(--fg-subtle);">${items.length} Dateien · Drag &amp; Drop hierher</span>
+          </summary>
+          <div class="cms-acc__body" style="padding-top:0.5rem;">
+            ${items.length === 0
+              ? `<div style="padding:0.9rem; text-align:center; font-size:12px; color:var(--fg-muted); border:1px dashed var(--border); border-radius:8px;">Ordner ist leer — Dateien vom Desktop oder aus anderen Ordnern hierher ziehen.</div>`
+              : `<div class="cms-media-list">${items.map(renderMediaRow).join('')}</div>`
+            }
+          </div>
+        </details>
+      `;
+    }).join('');
+    return groups;
+  };
 
   sidebar.innerHTML = `
-    <div class="cms-pane-title">Medien (${state.images.length}${unusedSet.size ? ` · ${unusedSet.size} ungenutzt` : ''})</div>
-    <form id="cms-upload-form" class="cms-upload-box">
-      <div style="font-size:11px; color:var(--fg-muted); margin-bottom:0.5rem;">
-        ✨ JPG/PNG-Bilder werden beim Upload automatisch auf max. 1920px skaliert und als <strong>.webp</strong> komprimiert.
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.85rem; padding-bottom:0.85rem; border-bottom:1px solid var(--border);">
+      <div>
+        <div class="cms-pane-title" style="display:flex; align-items:center; gap:0.45rem;">${ci('image', 18)} Medien-Dateimanager</div>
+        <div style="font-size:12px; color:var(--fg-muted);">${state.images.length} Dateien gesamt${unusedSet.size ? ` · ${unusedSet.size} ungenutzt` : ''} · Dateien zum Hochladen oder Verschieben einfach auf einen Ordner ziehen</div>
       </div>
-      <div class="cms-field">
-        <label>1. Ziel-Ordner wählen</label>
-        <select name="folder" id="cms-media-folder">
-          <option value="backgrounds">Hintergründe (Bilder & Videos)</option>
-          <option value="icons">Logos & Icons</option>
-          <option value="projects">Projekte</option>
-          <option value="members">Mitglieder</option>
-          <option value="journal">Journal</option>
-        </select>
-      </div>
-      <div class="cms-field">
-        <label>2. Bild oder Video auswählen</label>
-        <input type="file" id="cms-media-file" name="file" accept=".jpg,.jpeg,.png,.webp,.gif,.svg,.mp4,.webm,.mov" required />
-      </div>
-      <button type="submit" class="btn btn--primary btn--sm" id="cms-media-submit" style="width:100%;">
-        ↑ Datei jetzt hochladen
-      </button>
-    </form>
 
-    <div class="cms-field">
-      <label>Nach Ordner filtern</label>
-      <select id="cms-media-filter">
-        <option value="all" ${activeFilter === 'all' ? 'selected' : ''}>Alle Ordner anzeigen (${state.images.length})</option>
-        ${FOLDER_DEFS.map((f) => {
-          const cnt = state.images.filter((img) => img.folder === f.key).length;
-          return `<option value="${esc(f.key)}" ${activeFilter === f.key ? 'selected' : ''}>${esc(f.label)} (${cnt})</option>`;
-        }).join('')}
-      </select>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem;">
+        <input type="search" id="cms-media-search" value="${esc(state.mediaSearch || '')}" placeholder="Datei suchen…" style="padding:0.42rem 0.75rem; font-size:12.5px; width:210px;" />
+        <button type="button" id="cms-media-unused-toggle" class="btn btn--secondary btn--sm" style="${onlyUnused ? 'border-color:#fbbf24; color:#fbbf24;' : ''}">
+          ${ci('warning', 13)} Nur ungenutzte (${unusedSet.size})
+        </button>
+        <div class="cms-nav-pills">
+          <button type="button" class="cms-tab ${viewMode === 'list' ? 'is-active' : ''}" data-media-view="list" style="padding:0.28rem 0.65rem; font-size:12px;">${ci('list', 13)} Ordner &amp; Liste</button>
+          <button type="button" class="cms-tab ${viewMode === 'grid' ? 'is-active' : ''}" data-media-view="grid" style="padding:0.28rem 0.65rem; font-size:12px;">${ci('grid', 13)} Galerie</button>
+        </div>
+      </div>
     </div>
 
-    <div style="display:flex; flex-direction:column; gap:0.65rem;">
-      ${visibleFolders.map((f) => {
-        const items = state.images.filter((img) => img.folder === f.key);
-        if (activeFilter === 'all' && items.length === 0) return '';
-        return `
-          <details class="cms-acc" open>
-            <summary>
-              <span>📁 ${esc(f.label)}</span>
-              <span style="font-size:11.5px; color:var(--fg-subtle);">${items.length}</span>
-            </summary>
-            <div class="cms-acc__body">
-              ${items.length === 0
-                ? `<div style="font-size:12px; color:var(--fg-muted); padding:0.25rem 0;">Keine Dateien in diesem Ordner.</div>`
-                : `<div class="cms-grid-2">${items.map(renderMediaCard).join('')}</div>`
-              }
-            </div>
-          </details>
-        `;
-      }).join('')}
+    <div class="cms-media-shell">
+      <div style="display:flex; flex-direction:column; gap:0.85rem;">
+        <div class="cms-media-tree">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--fg-subtle); padding:0.25rem 0.5rem;">Ordnerstruktur</div>
+          <button type="button" class="cms-media-tree-btn ${activeFilter === 'all' ? 'is-active' : ''}" data-media-folder-pick="all">
+            <span style="display:inline-flex; align-items:center; gap:0.4rem;">${ci('folder', 14)} Alle Ordner</span>
+            <span style="font-size:11px; opacity:0.75;">${state.images.length}</span>
+          </button>
+          ${FOLDER_DEFS.map((f) => {
+            const cnt = state.images.filter((img) => img.folder === f.key).length;
+            return `
+              <button type="button" class="cms-media-tree-btn ${activeFilter === f.key ? 'is-active' : ''}" data-media-folder-pick="${esc(f.key)}" data-drop-folder="${esc(f.key)}">
+                <span style="display:inline-flex; align-items:center; gap:0.4rem;">${ci('folder', 14)} ${esc(f.label)}</span>
+                <span style="font-size:11px; opacity:0.75;">${cnt}</span>
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        <form id="cms-upload-form" class="cms-upload-box" style="padding:0.85rem;">
+          <div style="font-size:12.5px; font-weight:600; color:#fff; display:flex; align-items:center; gap:0.35rem;">${ci('upload', 14)} Neue Datei hochladen</div>
+          <div style="font-size:11px; color:var(--fg-muted); line-height:1.45;">
+            Bilder werden automatisch auf max. 1920px skaliert &amp; als <strong>.webp</strong> optimiert.
+          </div>
+          <select name="folder" id="cms-media-folder" style="font-size:12px;">
+            ${FOLDER_DEFS.map((f) => `<option value="${esc(f.key)}" ${(activeFilter !== 'all' ? activeFilter : 'backgrounds') === f.key ? 'selected' : ''}>${esc(f.label)}</option>`).join('')}
+          </select>
+          <input type="file" id="cms-media-file" name="file" accept=".jpg,.jpeg,.png,.webp,.gif,.svg,.mp4,.webm,.mov" required style="font-size:11.5px;" />
+          <button type="submit" class="btn btn--primary btn--sm" id="cms-media-submit" style="width:100%; justify-content:center;">
+            ${ci('upload', 13)} Hochladen
+          </button>
+        </form>
+      </div>
+
+      <div>
+        ${viewMode === 'list'
+          ? renderFolderListView()
+          : (filteredItems.length === 0
+              ? `<div class="cms-upload-box" style="text-align:center; padding:2.5rem 1rem; color:var(--fg-muted);">Keine Dateien in dieser Ansicht gefunden.</div>`
+              : `<div class="cms-media-gallery">${filteredItems.map(renderMediaCard).join('')}</div>`)
+        }
+      </div>
     </div>
   `;
 
-  document.getElementById('cms-media-filter')?.addEventListener('change', (e) => {
-    state.mediaFolderFilter = e.target.value;
+  // Drag & Drop für Dateien (sowohl Desktop-Upload als auch internes Verschieben zwischen Ordnern)
+  sidebar.querySelectorAll('[data-drag-media]').forEach((el) => {
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer?.setData('application/x-gs-media', JSON.stringify({
+        url: el.getAttribute('data-drag-media'),
+        folder: el.getAttribute('data-drag-folder'),
+      }));
+    });
+  });
+
+  sidebar.querySelectorAll('[data-drop-folder]').forEach((zone) => {
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.classList.add('is-drop-target');
+    });
+    zone.addEventListener('dragleave', () => {
+      zone.classList.remove('is-drop-target');
+    });
+    zone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.remove('is-drop-target');
+      const targetFolder = zone.getAttribute('data-drop-folder');
+      if (!targetFolder) return;
+
+      const internalRaw = e.dataTransfer?.getData('application/x-gs-media');
+      if (internalRaw) {
+        try {
+          const item = JSON.parse(internalRaw);
+          if (!item?.url || item.folder === targetFolder) return;
+          toast(`Verschiebe in „${targetFolder}“…`);
+          const res = await fetch('/api/cms.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': state.csrf },
+            body: JSON.stringify({ action: 'move_media', csrf: state.csrf, url: item.url, targetFolder }),
+          });
+          const data = await parseJsonResponse(res);
+          if (data.ok) {
+            state.images = data.images || [];
+            state.unusedImages = data.unusedImages || [];
+            toast(`✓ Verschoben nach ${targetFolder}`);
+            renderMediaSidebar(sidebar);
+          } else {
+            toast('Fehler: ' + (data.error || 'Konnte nicht verschoben werden'));
+          }
+        } catch (err) {
+          toast('Fehler: ' + err.message);
+        }
+        return;
+      }
+
+      const files = Array.from(e.dataTransfer?.files || []);
+      if (files.length) {
+        try {
+          for (let i = 0; i < files.length; i++) {
+            toast(`Lade ${i + 1}/${files.length} nach „${targetFolder}“ hoch…`);
+            const data = await uploadMediaFile(files[i], targetFolder);
+            state.images = data.images || [];
+            state.unusedImages = data.unusedImages || [];
+          }
+          toast(`✓ ${files.length} Datei(en) in ${targetFolder} hochgeladen`);
+          renderMediaSidebar(sidebar);
+        } catch (err) {
+          toast('Fehler: ' + err.message);
+        }
+      }
+    });
+  });
+
+  sidebar.querySelectorAll('[data-media-folder-pick]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.mediaFolderFilter = btn.getAttribute('data-media-folder-pick') || 'all';
+      renderMediaSidebar(sidebar);
+    });
+  });
+
+  sidebar.querySelectorAll('[data-media-view]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.mediaViewMode = btn.getAttribute('data-media-view') || 'grid';
+      renderMediaSidebar(sidebar);
+    });
+  });
+
+  document.getElementById('cms-media-unused-toggle')?.addEventListener('click', () => {
+    state.mediaOnlyUnused = !state.mediaOnlyUnused;
     renderMediaSidebar(sidebar);
+  });
+
+  document.getElementById('cms-media-search')?.addEventListener('input', (e) => {
+    state.mediaSearch = e.target.value;
+    renderMediaSidebar(sidebar);
+    const inp = document.getElementById('cms-media-search');
+    if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
   });
 
   const doMediaUpload = async () => {
@@ -5132,7 +5331,7 @@ function renderMediaSidebar(sidebar) {
       toast('✓ Datei hochgeladen: ' + data.uploaded);
       renderSidebar();
     } catch (err) {
-      if (subBtn) subBtn.textContent = '↑ Datei jetzt hochladen';
+      if (subBtn) subBtn.innerHTML = `${ci('upload', 13)} Hochladen`;
       toast('Fehler: ' + err.message);
     }
   };
@@ -5142,7 +5341,6 @@ function renderMediaSidebar(sidebar) {
     doMediaUpload();
   });
 
-  // Automatisch hochladen sobald eine Datei im Dialog ausgewählt wurde
   document.getElementById('cms-media-file')?.addEventListener('change', () => {
     doMediaUpload();
   });
@@ -5238,6 +5436,76 @@ window.addEventListener('message', (event) => {
       state.editingSecIdx = idx;
       document.querySelectorAll('[data-tab]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-tab') === 'pages'));
       renderSidebar();
+    }
+  }
+  if (msg.type === 'GS_PREVIEW_INLINE_EDIT' && msg.secId && msg.field) {
+    const pKey = state.selectedPageKey;
+    const sections = state.layout?.pages?.[pKey]?.sections || [];
+    const sec = sections.find((s) => s.id === msg.secId);
+    if (sec) {
+      const langStore = state.lang === 'en' ? state.pagesEn : state.pagesDe;
+      const compMap = {
+        'gs-hero': 'hero',
+        'gs-text-block': 'text',
+        'gs-cta': 'cta',
+        'gs-feature-cards': 'features',
+        'gs-projects-grid': 'projects',
+        'gs-team-grid': 'team',
+      };
+      let target = null;
+      if (sec.component === 'gs-custom-block') {
+        target = langStore?.[pKey]?.[sec.key];
+        if (target && msg.itemIdx !== null && msg.itemIdx !== undefined && Array.isArray(target.items)) {
+          target = target.items[msg.itemIdx];
+        }
+      } else {
+        const subKey = compMap[sec.component];
+        if (subKey) {
+          target = langStore?.[sec.key]?.[subKey] || langStore?.[pKey]?.[subKey];
+          if ((sec.component === 'gs-projects-grid' || sec.component === 'gs-team-grid') && target?.head) {
+            target = target.head;
+          }
+        }
+      }
+      if (target && typeof target === 'object') {
+        if ((msg.field === 'itemTitle' || msg.field === 'itemBody') && msg.rowIdx !== null && msg.rowIdx >= 0 && Array.isArray(target.items) && target.items[msg.rowIdx]) {
+          target.items[msg.rowIdx][msg.field === 'itemTitle' ? 'title' : 'body'] = msg.value;
+        } else if ((msg.field === 'metaValue' || msg.field === 'metaLabel') && msg.metaIdx !== null && msg.metaIdx >= 0 && Array.isArray(target.meta) && target.meta[msg.metaIdx]) {
+          target.meta[msg.metaIdx][msg.field === 'metaValue' ? 'value' : 'label'] = msg.value;
+        } else if (msg.field === 'ctaLabel' && msg.btnIdx !== null && msg.btnIdx >= 0 && Array.isArray(target.ctas) && target.ctas[msg.btnIdx]) {
+          target.ctas[msg.btnIdx].label = msg.value;
+        } else if (msg.field === 'cbBtnLabel' && msg.btnIdx !== null && msg.btnIdx >= 0 && Array.isArray(target.buttons) && target.buttons[msg.btnIdx]) {
+          target.buttons[msg.btnIdx].label = msg.value;
+        } else if (msg.field === 'headCtaLabel') {
+          target.ctaLabel = msg.value;
+        } else {
+          target[msg.field] = msg.value;
+        }
+        markDirty();
+      }
+    }
+  }
+  if (msg.type === 'GS_PREVIEW_RESIZE_BLOCK' && msg.secId) {
+    const pKey = state.selectedPageKey;
+    const sections = state.layout?.pages?.[pKey]?.sections || [];
+    const sec = sections.find((s) => s.id === msg.secId);
+    if (sec) {
+      if (sec.component === 'gs-custom-block') {
+        for (const langStore of [state.pagesDe, state.pagesEn]) {
+          const block = langStore?.[pKey]?.[sec.key];
+          if (!block) continue;
+          if (msg.itemIdx !== null && msg.itemIdx !== undefined && Array.isArray(block.items) && block.items[msg.itemIdx]) {
+            block.items[msg.itemIdx].maxWidthPct = msg.maxWidthPct;
+            if (msg.colSpan) block.items[msg.itemIdx].colSpan = msg.colSpan;
+          } else {
+            block.maxWidthPct = msg.maxWidthPct;
+          }
+        }
+      } else {
+        sec.maxWidthPct = msg.maxWidthPct;
+      }
+      markDirty();
+      syncPreview(msg.secId);
     }
   }
   if (msg.type === 'GS_PREVIEW_REORDER_SECTION' && msg.sourceSecId && msg.targetSecId) {
@@ -5391,7 +5659,7 @@ function buildCommandCatalog() {
 
   const cmds = [
     {
-      icon: '💾',
+      icon: ci('upload', 15),
       title: 'Änderungen speichern',
       subtitle: 'Alle Seiten, Projekte, Mitglieder & Journal-Posts sichern',
       category: 'Aktion',
@@ -5399,7 +5667,7 @@ function buildCommandCatalog() {
       run: () => saveAll(),
     },
     {
-      icon: '📝',
+      icon: ci('book', 15),
       title: 'Neuen Journal-Post schreiben',
       subtitle: 'Erstellt einen neuen Blog-Artikel im Markdown-Studio',
       category: 'Erstellen',
@@ -5407,7 +5675,7 @@ function buildCommandCatalog() {
       run: () => { switchTab('journal'); createNewJournalPostAndOpen(); },
     },
     {
-      icon: '📁',
+      icon: ci('folder', 15),
       title: 'Neues Projekt anlegen',
       subtitle: 'Fügt ein neues Projekt zur Liste hinzu',
       category: 'Erstellen',
@@ -5415,7 +5683,7 @@ function buildCommandCatalog() {
       run: () => { switchTab('projects'); createNewProjectAndOpen(); },
     },
     {
-      icon: '👤',
+      icon: ci('users', 15),
       title: 'Neues Teammitglied anlegen',
       subtitle: 'Fügt ein neues Mitglied im Team-Bereich hinzu',
       category: 'Erstellen',
@@ -5423,7 +5691,7 @@ function buildCommandCatalog() {
       run: () => { switchTab('members'); createNewMemberAndOpen(); },
     },
     {
-      icon: '🇩🇪',
+      icon: 'DE',
       title: 'Auf Deutsch wechseln',
       subtitle: 'Vorschau & Editor auf Deutsch (DE) umschalten',
       category: 'Ansicht',
@@ -5431,7 +5699,7 @@ function buildCommandCatalog() {
       run: () => document.querySelector('[data-lang="de"]')?.click(),
     },
     {
-      icon: '🇬🇧',
+      icon: 'EN',
       title: 'Auf Englisch wechseln',
       subtitle: 'Vorschau & Editor auf Englisch (EN) umschalten',
       category: 'Ansicht',
@@ -5439,7 +5707,7 @@ function buildCommandCatalog() {
       run: () => document.querySelector('[data-lang="en"]')?.click(),
     },
     {
-      icon: '📱',
+      icon: ci('grid', 15),
       title: 'Handy-Vorschau (Mobile)',
       subtitle: 'Live-Vorschau auf Smartphone-Größe umschalten',
       category: 'Ansicht',
@@ -5447,7 +5715,7 @@ function buildCommandCatalog() {
       run: () => document.querySelector('[data-vp="mobile"]')?.click(),
     },
     {
-      icon: '📲',
+      icon: ci('grid', 15),
       title: 'Tablet-Vorschau',
       subtitle: 'Live-Vorschau auf Tablet-Größe umschalten',
       category: 'Ansicht',
@@ -5455,7 +5723,7 @@ function buildCommandCatalog() {
       run: () => document.querySelector('[data-vp="tablet"]')?.click(),
     },
     {
-      icon: '🖥',
+      icon: ci('dashboard', 15),
       title: 'Desktop-Vorschau',
       subtitle: 'Live-Vorschau auf volle Breite umschalten',
       category: 'Ansicht',
@@ -5463,7 +5731,7 @@ function buildCommandCatalog() {
       run: () => document.querySelector('[data-vp="desktop"]')?.click(),
     },
     {
-      icon: '📬',
+      icon: ci('mail', 15),
       title: 'Postfach öffnen',
       subtitle: 'Kontakt- & Bewerbungsanfragen ansehen',
       category: 'Navigation',
@@ -5471,7 +5739,7 @@ function buildCommandCatalog() {
       run: () => switchTab('inbox', () => { state.inboxSubTab = 'messages'; }),
     },
     {
-      icon: '🖼',
+      icon: ci('image', 15),
       title: 'Medienbibliothek öffnen',
       subtitle: 'Bilder & Videos hochladen, kopieren oder löschen',
       category: 'Navigation',
@@ -5479,7 +5747,7 @@ function buildCommandCatalog() {
       run: () => switchTab('media'),
     },
     {
-      icon: '✨',
+      icon: ci('sparkles', 15),
       title: 'Neuigkeiten & Update-Verlauf anzeigen',
       subtitle: 'Zeigt alle Änderungen der aktuellen Version',
       category: 'Info',
@@ -5487,7 +5755,7 @@ function buildCommandCatalog() {
       run: () => showChangelogModal(false),
     },
     {
-      icon: '🚪',
+      icon: ci('external', 15),
       title: 'Abmelden / Ausloggen',
       subtitle: 'Beendet die aktuelle CMSS-Sitzung',
       category: 'Konto',
@@ -5511,7 +5779,7 @@ function buildCommandCatalog() {
   // Alle Seiten dynamisch
   for (const [k, cfg] of Object.entries(state.layout?.pages || {})) {
     cmds.push({
-      icon: '📄',
+      icon: ci('file', 15),
       title: `Seite öffnen: ${cfg.label || k}`,
       subtitle: `${cfg.pathDe || ''} · ${cfg.pathEn || ''}`,
       category: 'Seiten',
@@ -5523,7 +5791,7 @@ function buildCommandCatalog() {
   // Alle Projekte dynamisch
   (activeProjectsData().items || []).forEach((p, idx) => {
     cmds.push({
-      icon: '📁',
+      icon: ci('folder', 15),
       title: `Projekt bearbeiten: ${p.title || p.slug}`,
       subtitle: p.tagline || p.year || '',
       category: 'Projekte',
@@ -5535,7 +5803,7 @@ function buildCommandCatalog() {
   // Alle Mitglieder dynamisch
   (activeMembersData().items || []).forEach((m, idx) => {
     cmds.push({
-      icon: '👤',
+      icon: ci('users', 15),
       title: `Mitglied bearbeiten: ${m.name || m.slug}`,
       subtitle: m.role || '',
       category: 'Mitglieder',
@@ -5547,7 +5815,7 @@ function buildCommandCatalog() {
   // Alle Journal-Posts dynamisch
   (state.journal || []).forEach((j, idx) => {
     cmds.push({
-      icon: '📰',
+      icon: ci('book', 15),
       title: `Artikel bearbeiten: ${j.title || j.slug}`,
       subtitle: `${j.date || ''} · ${j.author || ''}`,
       category: 'Journal',
@@ -5560,7 +5828,7 @@ function buildCommandCatalog() {
   if (admin) {
     cmds.push(
       {
-        icon: '🛠️',
+        icon: ci('wrench', 15),
         title: 'Wartungsmodus einschalten (Seite offline nehmen)',
         subtitle: 'Besucher sehen die Wartungsseite, Team arbeitet weiter',
         category: 'System (Admin)',
@@ -5570,11 +5838,11 @@ function buildCommandCatalog() {
           state.site.maintenance.enabled = true;
           markDirty();
           switchTab('framework', () => { state.frameworkSubTab = 'ops'; });
-          toast('🛠️ Wartungsmodus aktiviert — jetzt noch „Speichern“ klicken!');
+          toast('Wartungsmodus aktiviert — jetzt noch „Speichern“ klicken!');
         },
       },
       {
-        icon: '🟢',
+        icon: ci('check', 15),
         title: 'Wartungsmodus ausschalten (Seite wieder live)',
         subtitle: 'Öffnet die Webseite wieder für alle Besucher',
         category: 'System (Admin)',
@@ -5584,11 +5852,11 @@ function buildCommandCatalog() {
           state.site.maintenance.enabled = false;
           markDirty();
           switchTab('framework', () => { state.frameworkSubTab = 'ops'; });
-          toast('🟢 Wartungsmodus ausgeschaltet — jetzt noch „Speichern“ klicken!');
+          toast('Wartungsmodus ausgeschaltet — jetzt noch „Speichern“ klicken!');
         },
       },
       {
-        icon: '🔐',
+        icon: ci('shield', 15),
         title: 'Authentik SSO & Accounts öffnen',
         subtitle: 'OpenID Connect & Team-Zugänge verwalten',
         category: 'System (Admin)',
@@ -5596,7 +5864,7 @@ function buildCommandCatalog() {
         run: () => switchTab('inbox', () => { state.inboxSubTab = 'accounts'; }),
       },
       {
-        icon: '🔔',
+        icon: ci('bell', 15),
         title: 'Discord Webhook & Turnstile öffnen',
         subtitle: 'Formular-Benachrichtigungen & Bot-Schutz',
         category: 'System (Admin)',
@@ -5604,7 +5872,7 @@ function buildCommandCatalog() {
         run: () => switchTab('inbox', () => { state.inboxSubTab = 'webhook'; }),
       },
       {
-        icon: '🩺',
+        icon: ci('shield', 15),
         title: 'System-Health-Check, Snapshots & Audit-Log',
         subtitle: 'Server-Diagnose, Rollback & Änderungsprotokoll öffnen',
         category: 'System (Admin)',
@@ -5612,7 +5880,7 @@ function buildCommandCatalog() {
         run: () => switchTab('framework', () => { state.frameworkSubTab = 'ops'; }),
       },
       {
-        icon: '📦',
+        icon: ci('package', 15),
         title: 'Core-Update-ZIP herunterladen',
         subtitle: 'Exportiert die verschlüsselte Core-Update-Datei',
         category: 'Export (Admin)',
@@ -5620,7 +5888,7 @@ function buildCommandCatalog() {
         run: () => { location.href = '/api/cms.php?action=export_core_zip'; },
       },
       {
-        icon: '🗄️',
+        icon: ci('folder', 15),
         title: 'Vollbackup (ZIP) herunterladen',
         subtitle: 'Sichert alle Inhalte, Medien & die SQLite-Datenbank',
         category: 'Export (Admin)',
@@ -5630,7 +5898,7 @@ function buildCommandCatalog() {
     );
     if (state.hasControlHub) {
       cmds.push({
-        icon: '🛡️',
+        icon: ci('shield', 15),
         title: 'CMSS Control Hub öffnen (/control/)',
         subtitle: 'Alle verbundenen Instanzen ansehen, anpingen oder sperren',
         category: 'System (Admin)',

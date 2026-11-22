@@ -147,17 +147,24 @@ class GsCustomBlock extends HTMLElement {
           ${d.eyebrow ? `<div class="eyebrow" style="margin-bottom:0.4rem;">${escHtml(d.eyebrow)}</div>` : ""}
           ${d.title ? `<h2 class="gs-cb__title" style="margin-bottom:1.5rem;">${d.title}</h2>` : ""}
           <div class="gs-cb__layout" style="--cb-cols:${cols}; --cb-gap:${gap};">
-            ${items.map((item, idx) => `
-              <div class="gs-cb__layout-item" data-cb-item-idx="${idx}">
-                ${renderBlockPiece(item)}
-              </div>
-            `).join("")}
+            ${items.map((item, idx) => {
+              const span = Math.max(1, Math.min(cols, Number(item?.colSpan) || 1));
+              const wPct = Number(item?.maxWidthPct || 0);
+              const itemStyle = `${span > 1 ? `grid-column: span ${span};` : ""}${wPct ? `width:${wPct}%; margin-inline:auto;` : ""}`;
+              return `
+                <div class="gs-cb__layout-item" data-cb-item-idx="${idx}" ${itemStyle ? `style="${itemStyle}"` : ""}>
+                  ${renderBlockPiece(item)}
+                </div>
+              `;
+            }).join("")}
             ${isPreview ? `<div class="gs-cb__layout-dropzone">+ Baustein hier in Spalten-Layout ziehen</div>` : ""}
           </div>
         </div>
       `;
     } else {
-      inner = renderBlockPiece(d);
+      const piece = renderBlockPiece(d);
+      const wPct = Number(d?.maxWidthPct || 0);
+      inner = wPct ? `<div class="gs-cb__sized" style="max-width:${wPct}%; margin-inline:auto;">${piece}</div>` : piece;
     }
 
     this.innerHTML = `

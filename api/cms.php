@@ -509,12 +509,19 @@ if (($_GET['action'] ?? '') !== 'public_status') {
 
 if ($method === 'GET') {
     $user = current_user();
-    if ($user && ($user['auth_provider'] ?? 'local') === 'local') {
-        $chk = $pdo->prepare('SELECT id FROM users WHERE id = :id AND email = :email LIMIT 1');
+    if ($user && ($user['auth_provider'] ?? '') === 'authentik') {
+        oidc_refresh_session_role(15);
+        $user = current_user();
+    } elseif ($user && ($user['auth_provider'] ?? 'local') === 'local') {
+        $chk = $pdo->prepare('SELECT id, role FROM users WHERE id = :id AND email = :email LIMIT 1');
         $chk->execute([':id' => (int) ($user['id'] ?? 0), ':email' => (string) ($user['email'] ?? '')]);
-        if (!$chk->fetchColumn()) {
+        $dbRow = $chk->fetch(PDO::FETCH_ASSOC);
+        if (!$dbRow) {
             unset($_SESSION['user']);
             $user = null;
+        } else {
+            $_SESSION['user']['role'] = (string) ($dbRow['role'] ?: 'admin');
+            $user = current_user();
         }
     }
     if (($_GET['action'] ?? '') === 'public_status') {
@@ -2250,8 +2257,62 @@ if ($method === 'POST') {
         }
 
         cms_json([
-            'ok'     => true,
-            'images' => cms_list_images(),
+            'ok'           => true,
+            'images'       => cms_list_images(),
+            'unusedImages' => cms_find_unused_images(),
+        ]);
+    }
+
+    if ($action === 'move_media') {
+        $relUrl = trim((string) ($input['url'] ?? ''));
+        $targetFolder = trim((string) ($input['targetFolder'] ?? ''));
+        $folderPaths = [
+            'icons'       => '/assets/icons/',
+            'backgrounds' => '/assets/images/backgrounds/',
+            'projects'    => '/assets/images/projects/',
+            'members'     => '/assets/images/members/',
+            'journal'     => '/assets/images/journal/',
+            'og'          => '/assets/images/og/',
+        ];
+        if ($relUrl === '' || str_contains($relUrl, '..') || str_contains($relUrl, '\\') || !isset($folderPaths[$targetFolder])) {
+            cms_json(['ok' => false, 'error' => 'Ungültiger Pfad oder Zielordner.'], 400);
+        }
+        $allowed = false;
+        foreach ($folderPaths as $prefix) {
+            if (str_starts_with($relUrl, $prefix)) {
+                $allowed = true;
+                break;
+            }
+        }
+        if (!$allowed) {
+            cms_json(['ok' => false, 'error' => 'Dieser Ordner darf nicht verschoben werden.'], 403);
+        }
+        $src = realpath($root . $relUrl);
+        $assetsRoot = realpath($root . '/assets');
+        if (!$src || !$assetsRoot || !str_starts_with($src, $assetsRoot . DIRECTORY_SEPARATOR) || !is_file($src)) {
+            cms_json(['ok' => false, 'error' => 'Quelldatei wurde nicht gefunden.'], 404);
+        }
+        $destDir = $root . $folderPaths[$targetFolder];
+        if (!is_dir($destDir)) {
+            mkdir($destDir, 0775, true);
+        }
+        $base = basename($src);
+        $dest = $destDir . $base;
+        if (is_file($dest)) {
+            $ext = pathinfo($base, PATHINFO_EXTENSION);
+            $stem = pathinfo($base, PATHINFO_FILENAME);
+            $dest = $destDir . $stem . '-' . substr(bin2hex(random_bytes(3)), 0, 5) . ($ext ? '.' . $ext : '');
+        }
+        if (!@rename($src, $dest)) {
+            cms_json(['ok' => false, 'error' => 'Datei konnte nicht verschoben werden.'], 500);
+        }
+        $newUrl = $folderPaths[$targetFolder] . basename($dest);
+        cms_safe_log_audit(current_user(), 'move_media', $relUrl . ' -> ' . $newUrl);
+        cms_json([
+            'ok'           => true,
+            'movedTo'      => $newUrl,
+            'images'       => cms_list_images(),
+            'unusedImages' => cms_find_unused_images(),
         ]);
     }
 

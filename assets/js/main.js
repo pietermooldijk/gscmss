@@ -382,7 +382,15 @@ async function composeMainSections(layout, pageKey) {
   // (kein Flackern, kein Neu-Aufbau der kompletten Seite in der CMSS-Vorschau)
   if (main.dataset.secSig === sig && main.children.length === sections.length) {
     await Promise.all(
-      Array.from(main.children).map((el) => {
+      Array.from(main.children).map((el, idx) => {
+        const s = sections[idx];
+        if (s?.maxWidthPct && Number(s.maxWidthPct) < 100) {
+          el.style.maxWidth = `${Number(s.maxWidthPct)}%`;
+          el.style.marginInline = "auto";
+        } else {
+          el.style.maxWidth = "";
+          el.style.marginInline = "";
+        }
         if (el.tagName !== "GS-SOCIAL-FEED" && typeof el.connectedCallback === "function") {
           return Promise.resolve(el.connectedCallback());
         }
@@ -404,6 +412,9 @@ async function composeMainSections(layout, pageKey) {
       if (sec.variant) attrs.push(`data-variant="${sec.variant}"`);
       if (sec.limit !== undefined && sec.limit !== "" && Number(sec.limit) > 0) {
         attrs.push(`data-limit="${sec.limit}"`);
+      }
+      if (sec.maxWidthPct && Number(sec.maxWidthPct) < 100) {
+        attrs.push(`style="max-width:${Number(sec.maxWidthPct)}%; margin-inline:auto;"`);
       }
       if (sec.transition && sec.transition !== "none") {
         attrs.push(`data-transition="${sec.transition}"`);
@@ -442,25 +453,43 @@ async function mountCmsFab() {
 
 let draggedPreviewSecId = null;
 
+let previewObserverBound = false;
 function mountPreviewBuilderTools() {
   if (new URLSearchParams(location.search).get("cms_preview") !== "1") return;
   const main = document.getElementById("main");
   if (!main) return;
 
+  // Beobachte async nachladende Web Components (<gs-hero>, <gs-text-block>, <gs-custom-block>, ...)
+  if (!previewObserverBound) {
+    previewObserverBound = true;
+    let t = null;
+    const obs = new MutationObserver(() => {
+      clearTimeout(t);
+      t = setTimeout(() => mountPreviewBuilderTools(), 40);
+    });
+    obs.observe(main, { childList: true, subtree: true });
+  }
+
   main.querySelectorAll(":scope > [data-cms-sec-id]").forEach((secEl) => {
     const secId = secEl.getAttribute("data-cms-sec-id");
-    secEl.setAttribute("draggable", "true");
+    secEl.setAttribute("draggable", "false");
 
     if (!secEl.querySelector(":scope > .gs-pb-toolbar")) {
       const bar = document.createElement("div");
       bar.className = "gs-pb-toolbar";
       bar.innerHTML = `
-        <span class="gs-pb-btn gs-pb-btn--drag" title="Abschnitt in der Vorschau verschieben">⠿ Ziehen</span>
+        <span class="gs-pb-btn gs-pb-btn--drag" draggable="true" title="Abschnitt in der Vorschau verschieben">⠿ Ziehen</span>
         <button type="button" class="gs-pb-btn" data-pb-act="up" title="Nach oben">↑</button>
         <button type="button" class="gs-pb-btn" data-pb-act="down" title="Nach unten">↓</button>
         <button type="button" class="gs-pb-btn" data-pb-act="dup" title="Duplizieren">⧉</button>
-        <button type="button" class="gs-pb-btn gs-pb-btn--danger" data-pb-act="del" title="Löschen">🗑</button>
+        <button type="button" class="gs-pb-btn gs-pb-btn--danger" data-pb-act="del" title="Löschen">✕</button>
       `;
+      const dragHandle = bar.querySelector(".gs-pb-btn--drag");
+      dragHandle?.addEventListener("dragstart", (e) => {
+        draggedPreviewSecId = secId;
+        e.dataTransfer?.setData("text/plain", secId || "");
+        if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+      });
       bar.addEventListener("click", (e) => {
         const btn = e.target.closest("[data-pb-act]");
         if (!btn) return;
@@ -474,66 +503,61 @@ function mountPreviewBuilderTools() {
       secEl.prepend(bar);
     }
 
-    if (secEl.dataset.pbBound === "1") return;
-    secEl.dataset.pbBound = "1";
+    if (secEl.dataset.pbBound !== "1") {
+      secEl.dataset.pbBound = "1";
 
-    secEl.addEventListener("dragstart", (e) => {
-      draggedPreviewSecId = secId;
-      e.dataTransfer?.setData("text/plain", secId || "");
-      if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
-    });
+      const getDropPos = (e) => {
+        const rect = secEl.getBoundingClientRect();
+        if (secEl.tagName === "GS-CUSTOM-BLOCK") {
+          const edge = Math.min(180, rect.width * 0.24);
+          if (e.clientX < rect.left + edge) return "left";
+          if (e.clientX > rect.right - edge) return "right";
+        }
+        return e.clientY < rect.top + rect.height / 2 ? "before" : "after";
+      };
 
-    const getDropPos = (e) => {
-      const rect = secEl.getBoundingClientRect();
-      if (secEl.tagName === "GS-CUSTOM-BLOCK") {
-        const edge = Math.min(180, rect.width * 0.24);
-        if (e.clientX < rect.left + edge) return "left";
-        if (e.clientX > rect.right - edge) return "right";
-      }
-      return e.clientY < rect.top + rect.height / 2 ? "before" : "after";
-    };
+      const clearDropClasses = () => {
+        secEl.classList.remove("gs-pb-drop-before", "gs-pb-drop-after", "gs-pb-drop-left", "gs-pb-drop-right");
+      };
 
-    const clearDropClasses = () => {
-      secEl.classList.remove("gs-pb-drop-before", "gs-pb-drop-after", "gs-pb-drop-left", "gs-pb-drop-right");
-    };
+      secEl.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        const pos = getDropPos(e);
+        clearDropClasses();
+        secEl.classList.add(`gs-pb-drop-${pos}`);
+      });
 
-    secEl.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      const pos = getDropPos(e);
-      clearDropClasses();
-      secEl.classList.add(`gs-pb-drop-${pos}`);
-    });
+      secEl.addEventListener("dragleave", () => {
+        clearDropClasses();
+      });
 
-    secEl.addEventListener("dragleave", () => {
-      clearDropClasses();
-    });
+      secEl.addEventListener("drop", (e) => {
+        e.preventDefault();
+        const pos = getDropPos(e);
+        clearDropClasses();
 
-    secEl.addEventListener("drop", (e) => {
-      e.preventDefault();
-      const pos = getDropPos(e);
-      clearDropClasses();
+        const rawBlock = e.dataTransfer?.getData("application/x-gs-block");
+        if (rawBlock) {
+          try {
+            const block = JSON.parse(rawBlock);
+            window.parent?.postMessage(
+              { type: "GS_PREVIEW_INSERT_BLOCK", targetSecId: secId, pos, block },
+              "*"
+            );
+          } catch { /* ignore */ }
+          draggedPreviewSecId = null;
+          return;
+        }
 
-      const rawBlock = e.dataTransfer?.getData("application/x-gs-block");
-      if (rawBlock) {
-        try {
-          const block = JSON.parse(rawBlock);
+        if (draggedPreviewSecId && draggedPreviewSecId !== secId) {
           window.parent?.postMessage(
-            { type: "GS_PREVIEW_INSERT_BLOCK", targetSecId: secId, pos, block },
+            { type: "GS_PREVIEW_REORDER_SECTION", sourceSecId: draggedPreviewSecId, targetSecId: secId, pos },
             "*"
           );
-        } catch { /* ignore */ }
+        }
         draggedPreviewSecId = null;
-        return;
-      }
-
-      if (draggedPreviewSecId && draggedPreviewSecId !== secId) {
-        window.parent?.postMessage(
-          { type: "GS_PREVIEW_REORDER_SECTION", sourceSecId: draggedPreviewSecId, targetSecId: secId, pos },
-          "*"
-        );
-      }
-      draggedPreviewSecId = null;
-    });
+      });
+    }
 
     const dropzone = secEl.querySelector(".gs-cb__layout-dropzone");
     if (dropzone && dropzone.dataset.pbBound !== "1") {
@@ -561,7 +585,181 @@ function mountPreviewBuilderTools() {
         } catch { /* ignore */ }
       });
     }
+
+    // --- WYSIWYG Inline-Editing (wie Word, auf ALLEN Elementen der Seite) ---
+    const editableSelectors = [
+      [".gs-hero__eyebrow", "eyebrow", false],
+      [".gs-hero__title", "title", false],
+      [".gs-hero__subtitle", "subtitle", false],
+      [".gs-hero__cta-row a", "ctaLabel", false],
+      [".gs-hero__meta-value", "metaValue", false],
+      [".gs-hero__meta-item > span:not(.gs-hero__meta-value)", "metaLabel", false],
+      [".gs-text-block .eyebrow", "eyebrow", false],
+      [".gs-text-block__title", "title", false],
+      [".gs-text-block__body", "body", true],
+      [".gs-cta .eyebrow", "eyebrow", false],
+      [".gs-cta__title", "title", false],
+      [".gs-cta__subtitle", "subtitle", false],
+      [".gs-cta__row a", "ctaLabel", false],
+      [".gs-features__head .eyebrow", "eyebrow", false],
+      [".gs-features__title", "title", false],
+      [".gs-features__intro", "intro", false],
+      [".gs-manifesto-row__title", "itemTitle", false],
+      [".gs-manifesto-row__body", "itemBody", false],
+      [".gs-projects__head .eyebrow", "eyebrow", false],
+      [".gs-projects__title", "title", false],
+      [".gs-projects__head a.btn", "headCtaLabel", false],
+      [".gs-team__head .eyebrow", "eyebrow", false],
+      [".gs-team__head .gs-features__title", "title", false],
+      [".gs-team__head .gs-features__intro", "intro", false],
+      [".gs-team__head a.btn", "headCtaLabel", false],
+      [".gs-custom-block .eyebrow", "eyebrow", false],
+      [".gs-cb__title", "title", false],
+      [".gs-cb__body", "body", true],
+      [".gs-cb__split-text a.btn", "headCtaLabel", false],
+      [".gs-cb__buttons a", "cbBtnLabel", false],
+      [".gs-cb__quote p", "quote", false],
+      [".gs-cb__figure figcaption", "caption", false],
+      [".gs-cb__caption", "caption", false],
+    ];
+    editableSelectors.forEach(([sel, field, isBodyArray]) => {
+      secEl.querySelectorAll(sel).forEach((el) => {
+        if (el.dataset.wysiwygBound === "1") return;
+        el.dataset.wysiwygBound = "1";
+        el.title = "Klicken zum direkten Bearbeiten";
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          secEl.setAttribute("draggable", "false");
+          document.querySelectorAll(".gs-wysiwyg-editing").forEach((other) => {
+            if (other !== el) other.classList.remove("gs-wysiwyg-editing");
+          });
+          el.contentEditable = "true";
+          el.classList.add("gs-wysiwyg-editing");
+          el.focus();
+          showWysiwygToolbar(el, secId);
+          window.parent?.postMessage({ type: "GS_PREVIEW_SECTION_CLICK", secId }, "*");
+        });
+        let emitTimer = null;
+        const sendEdit = () => {
+          const itemEl = el.closest("[data-cb-item-idx]");
+          const itemIdx = itemEl ? Number(itemEl.getAttribute("data-cb-item-idx")) : null;
+          const rowEl = el.closest(".gs-manifesto-row");
+          const rowIdx = rowEl ? Array.from(secEl.querySelectorAll(".gs-manifesto-row")).indexOf(rowEl) : null;
+          const metaEl = el.closest(".gs-hero__meta-item");
+          const metaIdx = metaEl ? Array.from(secEl.querySelectorAll(".gs-hero__meta-item")).indexOf(metaEl) : null;
+          const btnWrap = el.closest(".gs-hero__cta-row, .gs-cta__row, .gs-cb__buttons");
+          const btnIdx = btnWrap ? Array.from(btnWrap.querySelectorAll("a")).indexOf(el) : null;
+          const val = isBodyArray
+            ? Array.from(el.querySelectorAll("p")).map((p) => p.innerHTML.trim()).filter(Boolean)
+            : el.innerHTML.trim();
+          const finalVal = (isBodyArray && (!val || !val.length))
+            ? [el.innerHTML.trim()].filter(Boolean)
+            : val;
+          window.parent?.postMessage({
+            type: "GS_PREVIEW_INLINE_EDIT",
+            secId,
+            itemIdx,
+            rowIdx,
+            metaIdx,
+            btnIdx,
+            field,
+            value: finalVal,
+          }, "*");
+        };
+        el.addEventListener("input", () => {
+          clearTimeout(emitTimer);
+          emitTimer = setTimeout(sendEdit, 180);
+        });
+        el.addEventListener("blur", () => {
+          clearTimeout(emitTimer);
+          sendEdit();
+        });
+      });
+    });
+
+    // --- Drag-to-Resize Handles für ALLE Bausteine, Sektionen & Spalten-Elemente ---
+    const attachResizeHandle = (targetEl, itemIdx = null) => {
+      if (!targetEl || targetEl.querySelector(":scope > .gs-pb-resize-handle")) return;
+      const handle = document.createElement("div");
+      handle.className = "gs-pb-resize-handle";
+      handle.title = "Ziehen zum Vergrößern / Verkleinern";
+      handle.textContent = "↘";
+      targetEl.appendChild(handle);
+
+      handle.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const startX = e.clientX;
+        const parentRect = (targetEl.parentElement || secEl).getBoundingClientRect();
+        const startWidth = targetEl.getBoundingClientRect().width;
+        let currentPct = Math.round((startWidth / Math.max(1, parentRect.width)) * 100);
+
+        const onMove = (ev) => {
+          const dx = ev.clientX - startX;
+          const nextW = Math.max(200, startWidth + dx);
+          currentPct = Math.max(30, Math.min(100, Math.round((nextW / Math.max(1, parentRect.width)) * 100)));
+          const sized = targetEl.querySelector(":scope > .container > .gs-cb__sized") || targetEl;
+          sized.style.maxWidth = `${currentPct}%`;
+          sized.style.marginInline = "auto";
+        };
+        const onUp = () => {
+          window.removeEventListener("pointermove", onMove);
+          window.removeEventListener("pointerup", onUp);
+          const colSpan = itemIdx !== null ? (currentPct > 65 ? 2 : 1) : null;
+          window.parent?.postMessage({
+            type: "GS_PREVIEW_RESIZE_BLOCK",
+            secId,
+            itemIdx,
+            maxWidthPct: currentPct,
+            colSpan,
+          }, "*");
+        };
+        window.addEventListener("pointermove", onMove);
+        window.addEventListener("pointerup", onUp);
+      });
+    };
+
+    const layoutItems = secEl.querySelectorAll(".gs-cb__layout-item");
+    if (layoutItems.length) {
+      layoutItems.forEach((it) => attachResizeHandle(it, Number(it.getAttribute("data-cb-item-idx"))));
+    } else {
+      attachResizeHandle(secEl, null);
+    }
   });
+}
+
+function showWysiwygToolbar(targetEl, secId) {
+  let bar = document.getElementById("gs-wysiwyg-bar");
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "gs-wysiwyg-bar";
+    bar.innerHTML = `
+      <button type="button" data-wcmd="bold" title="Fett"><b>B</b></button>
+      <button type="button" data-wcmd="italic" title="Kursiv"><i>I</i></button>
+      <button type="button" data-wcmd="underline" title="Unterstrichen"><u>U</u></button>
+      <button type="button" data-wcmd="createLink" title="Link einfügen">Link</button>
+      <button type="button" data-wcmd="removeFormat" title="Formatierung entfernen">Clear</button>
+    `;
+    bar.addEventListener("mousedown", (e) => e.preventDefault());
+    bar.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-wcmd]");
+      if (!btn) return;
+      const cmd = btn.getAttribute("data-wcmd");
+      if (cmd === "createLink") {
+        const href = prompt("Link-URL eingeben (z. B. https://... oder /de/kontakt):");
+        if (href) document.execCommand("createLink", false, href);
+      } else {
+        document.execCommand(cmd, false, null);
+      }
+      document.querySelector(".gs-wysiwyg-editing")?.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    document.body.appendChild(bar);
+  }
+  const rect = targetEl.getBoundingClientRect();
+  bar.style.display = "inline-flex";
+  bar.style.top = `${Math.max(8, rect.top - 42)}px`;
+  bar.style.left = `${Math.max(8, Math.min(window.innerWidth - 260, rect.left))}px`;
 }
 
 function bindPreviewMessaging(initialPageKey) {
@@ -605,8 +803,8 @@ function bindPreviewMessaging(initialPageKey) {
         applyThemeOverrides(msg.layout.themeOverrides, msg.site);
       }
 
-      const isJournalPostPage = Boolean(document.querySelector("gs-journal-post"));
-      const key = isJournalPostPage ? null : (msg.pageKey || initialPageKey || resolvePageKey(msg.layout));
+      const isDetailPage = Boolean(document.querySelector("gs-journal-post, gs-member-detail, gs-project-detail"));
+      const key = isDetailPage ? null : (msg.pageKey || initialPageKey || resolvePageKey(msg.layout));
       if (msg.layout && key) {
         await composeMainSections(msg.layout, key);
       }

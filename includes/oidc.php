@@ -231,33 +231,22 @@ function oidc_handle_callback(array $query): string
     }
 
     $claims = $idClaims;
+    $idGroups = is_array($idClaims['groups'] ?? null) ? $idClaims['groups'] : [];
+    $uiGroups = [];
     if (!empty($disc['userinfo_endpoint']) && !empty($tokens['access_token'])) {
         $userInfo = oidc_http_json($disc['userinfo_endpoint'], null, [
             'Authorization: Bearer ' . $tokens['access_token'],
         ]);
+        $uiGroups = is_array($userInfo['groups'] ?? null) ? $userInfo['groups'] : [];
         $claims = array_merge($claims, $userInfo);
     }
 
-    // Rollen-Mapping über Authentik-Gruppen (Admin-Gruppe / Editor-Gruppe)
-    $groups = $claims['groups'] ?? [];
-    if (!is_array($groups)) {
-        $groups = [];
+    // Rollen-Mapping über Authentik-Gruppen (ID-Token + Userinfo zusammenführen)
+    $groups = array_values(array_unique(array_merge($idGroups, $uiGroups)));
+    if (empty($groups) && is_array($claims['groups'] ?? null)) {
+        $groups = $claims['groups'];
     }
-    $normalizedGroups = array_map(fn($g) => strtolower(trim((string) $g)), $groups);
-
-    $role = 'admin';
-    $hasAdminGroup = $cfg['admin_group'] !== '';
-    $hasEditorGroup = $cfg['editor_group'] !== '';
-
-    if ($hasAdminGroup || $hasEditorGroup) {
-        if ($hasAdminGroup && in_array(strtolower($cfg['admin_group']), $normalizedGroups, true)) {
-            $role = 'admin';
-        } elseif ($hasEditorGroup && in_array(strtolower($cfg['editor_group']), $normalizedGroups, true)) {
-            $role = 'editor';
-        } else {
-            throw new RuntimeException('Dein Authentik-Account besitzt keine berechtigte CMSS-Rolle (Admin/Editor).');
-        }
-    }
+    $role = oidc_map_groups_to_role($groups, $cfg);
 
     $email = trim((string) ($claims['email'] ?? ''));
     $name = trim((string) ($claims['name'] ?? $claims['preferred_username'] ?? $email ?: 'Authentik User'));
@@ -276,8 +265,69 @@ function oidc_handle_callback(array $query): string
     if (!empty($tokens['id_token'])) {
         $_SESSION['oidc_id_token'] = (string) $tokens['id_token'];
     }
+    if (!empty($tokens['access_token'])) {
+        $_SESSION['oidc_access_token'] = (string) $tokens['access_token'];
+        $_SESSION['oidc_role_checked_at'] = time();
+    }
 
     return oidc_sanitize_return((string) ($flow['return_to'] ?? '/cms/'));
+}
+
+function oidc_map_groups_to_role(array $groups, array $cfg): string
+{
+    $normalizedGroups = array_map(fn($g) => strtolower(trim((string) $g)), $groups);
+    $role = 'admin';
+    $hasAdminGroup = ($cfg['admin_group'] ?? '') !== '';
+    $hasEditorGroup = ($cfg['editor_group'] ?? '') !== '';
+
+    if ($hasAdminGroup || $hasEditorGroup) {
+        if ($hasAdminGroup && in_array(strtolower((string) $cfg['admin_group']), $normalizedGroups, true)) {
+            $role = 'admin';
+        } elseif ($hasEditorGroup && in_array(strtolower((string) $cfg['editor_group']), $normalizedGroups, true)) {
+            $role = 'editor';
+        } else {
+            throw new RuntimeException('Dein Authentik-Account besitzt keine berechtigte CMSS-Rolle (Admin/Editor).');
+        }
+    }
+    return $role;
+}
+
+/**
+ * Aktualisiert die Authentik-Rolle einer laufenden Session live über den Userinfo-Endpunkt.
+ */
+function oidc_refresh_session_role(int $minIntervalSec = 15): void
+{
+    $user = $_SESSION['user'] ?? null;
+    if (!is_array($user) || ($user['auth_provider'] ?? '') !== 'authentik') {
+        return;
+    }
+    $last = (int) ($_SESSION['oidc_role_checked_at'] ?? 0);
+    if ((time() - $last) < $minIntervalSec) {
+        return;
+    }
+    $accessToken = (string) ($_SESSION['oidc_access_token'] ?? '');
+    if ($accessToken === '' || !oidc_is_ready()) {
+        return;
+    }
+    $_SESSION['oidc_role_checked_at'] = time();
+    try {
+        $cfg = oidc_config();
+        $disc = oidc_discover($cfg['issuer']);
+        if (empty($disc['userinfo_endpoint'])) {
+            return;
+        }
+        $userInfo = oidc_http_json($disc['userinfo_endpoint'], null, [
+            'Authorization: Bearer ' . $accessToken,
+        ]);
+        $groups = is_array($userInfo['groups'] ?? null) ? $userInfo['groups'] : [];
+        if (!empty($groups)) {
+            $_SESSION['user']['role'] = oidc_map_groups_to_role($groups, $cfg);
+        }
+    } catch (Throwable $e) {
+        if (str_contains($e->getMessage(), 'keine berechtigte CMSS-Rolle')) {
+            logout();
+        }
+    }
 }
 
 function oidc_logout_url(string $postLogoutReturn = '/cms/'): ?string
