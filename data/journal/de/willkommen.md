@@ -1,6 +1,6 @@
 ---
 title: Willkommen im Journal
-date: 2026-11-20
+date: 2026-11-22
 excerpt: Ein erster Platzhalter-Artikel im Markdown-Format.
 category: Info
 author: Redaktion

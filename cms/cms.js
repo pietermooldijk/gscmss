@@ -4599,6 +4599,18 @@ function renderFrameworkSidebar(sidebar) {
         </a>
       </div>
 
+      ${state.hasControlHub ? `
+        <div class="cms-upload-box" style="border-color:rgba(45,205,255,0.35);">
+          <div style="font-size:13px; font-weight:600; color:#fff;">🛠️ Gamet Studios Engine-Basis (.zip)</div>
+          <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
+            Exportiert nur die reine <strong>App-Engine</strong> (<code>includes/engine.php</code>, <code>api/app.php</code>, <code>assets/js/core/engine.js</code>, Auth/OIDC, SQLite App-Store &amp; Beispiel-App unter <code>apps/example-notes/</code>) für eigene Projekte ohne CMSS-Seiteninhalte.
+          </p>
+          <a href="/api/cms.php?action=export_engine_zip" class="btn btn--secondary btn--sm" style="width:100%; justify-content:center; text-decoration:none;">
+            ↓ Standalone Engine (.zip) herunterladen
+          </a>
+        </div>
+      ` : ''}
+
       <div class="cms-upload-box">
         <div style="font-size:13px; font-weight:600; color:#fff;">📦 Komplettes Webseiten-Backup (.zip)</div>
         <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">

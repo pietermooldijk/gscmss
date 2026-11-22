@@ -7,23 +7,16 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/engine.php';
 require_once __DIR__ . '/../includes/discord.php';
 require_once __DIR__ . '/../includes/oidc.php';
-require_once __DIR__ . '/../includes/telemetry.php';
-require_once __DIR__ . '/../includes/integrity.php';
 
 $root = dirname(__DIR__);
 $pdo = get_db();
 
 function cms_json(array $payload, int $status = 200): never
 {
-    http_response_code($status);
-    header('Content-Type: application/json; charset=utf-8');
-    header('Cache-Control: no-store, no-cache, must-revalidate');
-    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    exit;
+    gs_json($payload, $status);
 }
 
 function cms_read_json(string $relPath): array
@@ -680,6 +673,115 @@ if ($method === 'GET') {
         exit;
     }
 
+    // Standalone Gamet Studios Engine Export (NUR auf der Master-Instanz mit geheimem Key in control/hub.php)
+    if (($_GET['action'] ?? '') === 'export_engine_zip') {
+        if (!$user) {
+            cms_json(['ok' => false, 'error' => 'Nicht angemeldet.'], 401);
+        }
+        cms_require_admin();
+        $hubFile = $root . '/control/hub.php';
+        $privFile = $root . '/control/.ht_hub_private.pem';
+        if (!is_file($hubFile) || !is_file($privFile)) {
+            cms_json(['ok' => false, 'error' => 'Engine-Export ist ausschließlich auf der Master-Instanz erlaubt.'], 403);
+        }
+        require_once $hubFile;
+        $expectedKeyHash = 'ca0d9e8c5c7c6109bb24896a538100ad87fe7effce322b504d5960e427f81413';
+        if (!defined('GS_MASTER_EXPORT_KEY') || !hash_equals($expectedKeyHash, hash('sha256', (string) GS_MASTER_EXPORT_KEY))) {
+            cms_json(['ok' => false, 'error' => 'Ungültiger Master-Export-Schlüssel.'], 403);
+        }
+        if (!class_exists('ZipArchive')) {
+            cms_json(['ok' => false, 'error' => 'PHP ZipArchive-Erweiterung ist auf diesem Server nicht aktiv.'], 500);
+        }
+
+        $tmpZip = STORAGE_DIR . '/.ht_engine_export_' . bin2hex(random_bytes(6)) . '.zip';
+        $zip = new ZipArchive();
+        if ($zip->open($tmpZip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            cms_json(['ok' => false, 'error' => 'Engine-ZIP konnte nicht erstellt werden.'], 500);
+        }
+
+        $addEngineFolder = function (string $relFolder, ?callable $filter = null) use ($zip, $root): void {
+            $absDir = $root . '/' . trim($relFolder, '/');
+            if (!is_dir($absDir)) {
+                return;
+            }
+            $it = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($absDir, FilesystemIterator::SKIP_DOTS),
+                RecursiveIteratorIterator::LEAVES_ONLY
+            );
+            foreach ($it as $file) {
+                if (!$file->isFile()) {
+                    continue;
+                }
+                $absPath = $file->getPathname();
+                $relPath = ltrim(str_replace('\\', '/', substr($absPath, strlen($root))), '/');
+                if ($filter && !$filter($relPath)) {
+                    continue;
+                }
+                $zip->addFile($absPath, $relPath);
+            }
+        };
+
+        $addEngineFolder('includes', function (string $relPath) {
+            return $relPath !== 'includes/config.php';
+        });
+        if (is_file($root . '/includes/config.php')) {
+            $cfgContent = (string) file_get_contents($root . '/includes/config.php');
+            $cfgContent = preg_replace("/define\('SITE_URL',\s*'[^']*'\);/", "define('SITE_URL', '');", $cfgContent);
+            $zip->addFromString('includes/config.php', $cfgContent);
+        }
+
+        foreach (['api/app.php', 'api/oidc.php', 'api/submit.php', 'tools/router.php', '.htaccess', 'storage/.htaccess', 'storage/index.php', 'LICENSE'] as $single) {
+            if (is_file($root . '/' . $single)) {
+                $zip->addFile($root . '/' . $single, $single);
+            }
+        }
+        $addEngineFolder('assets/js/core');
+        foreach (['tokens.css', 'reset.css', 'base.css', 'utilities.css', 'fonts.css'] as $cssFile) {
+            if (is_file($root . '/assets/css/' . $cssFile)) {
+                $zip->addFile($root . '/assets/css/' . $cssFile, 'assets/css/' . $cssFile);
+            }
+        }
+        $addEngineFolder('apps/example-notes');
+
+        $ver = preg_replace('/[^a-z0-9._-]+/i', '', (string) ($siteData['version'] ?? '1.4')) ?: '1.4';
+        $zip->addFromString('ENGINE.md', <<<ENG
+# Gamet Studios Engine (v{$ver})
+
+Modulare PHP- & Vanilla-JS-App-Basis (ohne Build-Server, ohne MySQL) mit SQLite-Store, Auth/RBAC, Authentik OIDC SSO, CSRF-/Rate-Limit-Schutz, Integritätssiegel und Masterserver-Lizenzierung.
+
+## Schnellstart
+1. Lokal starten:
+   ```bash
+   php -S localhost:8080 tools/router.php
+   ```
+2. Beispiel-App öffnen: `http://localhost:8080/apps/example-notes/`
+
+## Eigene App bauen (`apps/<mein-projekt>/`)
+1. Lege `apps/<mein-projekt>/manifest.json` an (`name`, `version`, `description`).
+2. Backend-Endpunkt `apps/<mein-projekt>/api.php` anlegen — aufgerufen über `/api/app.php?app=<mein-projekt>&action=...`:
+   - `\$engine` steht bereit (`gs_boot_engine()` ist bereits gelaufen).
+   - `gs_require_auth('admin')`, `gs_require_csrf()`, `gs_rate_limit(...)`
+   - Persistenter SQLite-Store ohne SQL-Migration: `gs_store_put(\$ns, \$key, \$data)`, `gs_store_get(\$ns, \$key)`, `gs_store_list(\$ns)`, `gs_store_delete(\$ns, \$key)`.
+3. Frontend-SDK in HTML/JS einbinden:
+   ```js
+   import { gsEngine } from '/assets/js/core/engine.js';
+   const info = await gsEngine.auth();
+   await gsEngine.store.put('mein-ns', 'item-1', { title: 'Hallo Welt' });
+   ```
+ENG
+        );
+
+        $zip->close();
+        $downloadName = 'gs-engine-v' . $ver . '-' . date('Y-m-d') . '.zip';
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $downloadName . '"');
+        header('Content-Length: ' . filesize($tmpZip));
+        header('Cache-Control: no-store');
+        readfile($tmpZip);
+        @unlink($tmpZip);
+        exit;
+    }
+
     // Blanko GS CMSS Framework Export (komplett funktionierendes Starter-Paket mit leeren DBs, 0 Accounts, Platzhalter-Seiten & SETUP.md)
     if (($_GET['action'] ?? '') === 'export_blanko_framework_zip') {
         if (!$user) {
@@ -718,9 +820,16 @@ if ($method === 'GET') {
             }
         };
 
-        // 1) Alle System-Ordner & statischen Seiten-Shells übernehmen
+        // 1) Alle System-Ordner & statischen Seiten-Shells übernehmen (Engine-Kernel läuft im CMSS mit, ohne apps/ & ohne Engine-Export)
         foreach (['cms', 'api', 'includes', 'assets/js', 'assets/css', 'assets/fonts', 'tools', 'admin'] as $sysDir) {
-            $addFolderFiltered($sysDir);
+            $addFolderFiltered($sysDir, function (string $relPath) {
+                return $relPath !== 'includes/config.php';
+            });
+        }
+        if (is_file($root . '/includes/config.php')) {
+            $cfgContent = (string) file_get_contents($root . '/includes/config.php');
+            $cfgContent = preg_replace("/define\('SITE_URL',\s*'[^']*'\);/", "define('SITE_URL', '');", $cfgContent);
+            $zip->addFromString('includes/config.php', $cfgContent);
         }
         foreach (['de', 'en'] as $langDir) {
             $addFolderFiltered($langDir, function (string $relPath) {
@@ -1006,14 +1115,12 @@ Danach erreichst du:
 
 ---
 
-## 2. Ersten Administrator-Account anmelden (`/cms`)
+## 2. Ersten Administrator-Account anlegen (`/cms`)
 
 1. Öffne im Browser **`https://deine-domain.de/cms`** (oder lokal `http://localhost:8080/cms`, funktioniert bewusst nur am Desktop).
-2. In der frischen Datenbank ist bereits ein **Erstaufsetz-Admin** hinterlegt:
-   - **E-Mail (Benutzername):** `admin@example.com`
-   - **Passwort:** `GS-Setup-2026!`
-3. Melde dich damit im CMSS an.
-4. **Wichtig:** Lege nach dem ersten Login unter **„Postfach & Accounts“ → „Accounts“** deinen eigenen Administrator-Account an (oder ändere das Passwort) und lösche den Standard-Account `admin@example.com`, bevor die Seite live geht.
+2. Beim ersten Start mit einer frischen Blanko-Datenbank (`0` Accounts) erscheint automatisch der Einrichtungs-Screen **„Ersten Administrator-Account anlegen“** (Name, E-Mail, Passwort mit mind. 8 Zeichen).
+3. Sobald du auf **„Account anlegen & CMSS starten“** klickst, wird dein Admin-Konto erstellt, du wirst direkt eingeloggt und die neue Instanz meldet sich beim Lizenz-Hub.
+4. Weitere Team-Mitglieder (als `Admin` oder `Editor`) kannst du jederzeit unter **„Postfach & Accounts“ → „Accounts“** anlegen oder später **Authentik SSO (OIDC)** verbinden.
 
 ---
 
@@ -1099,6 +1206,7 @@ Ein schnelles, modulares **Visual-CMS & Multi-Site-Framework** ohne Build-Server
 
 > **Lizenz:** Source-Available — siehe [`LICENSE`](LICENSE).  
 > **Setup-Anleitung:** Siehe [`SETUP.md`](SETUP.md).  
+> **Dokumentation:** Siehe [`DOCUMENTATION.md`](DOCUMENTATION.md).  
 > **Updates & Community:** Die neusten verschlüsselten Core-Updates gibt es immer auf unserem [Discord](https://dsc.gg/gametstudios).
 
 ---
@@ -1121,10 +1229,10 @@ Ein schnelles, modulares **Visual-CMS & Multi-Site-Framework** ohne Build-Server
   - Pro-Seite **SEO- & OpenGraph-Editor**, **Redirect-Manager**, optional im CMSS editierbare **Rechtstexte** und automatische **`sitemap.xml`** beim Speichern.
 - **Betrieb & Sicherheit:**
   - **System-Health-Check**, **automatische JSON-Snapshots** (letzte 15 Stände mit 1-Klick-Rollback), **SQLite-Audit-Log** und **Wartungsmodus** (Team arbeitet weiter normal).
-  - Geschützte SQLite-Datenbank in `storage/.ht_gs_vault_9f4c2a8e1b7d3e6f.sqlite`, `.htaccess`-Sperren, Brute-Force-Rate-Limit, Cloudflare Turnstile & DSGVO-2-Klick-Blocker.
+  - Geschützte SQLite-Datenbank in `storage/.ht_gs_vault_9f4c2a8e1b7d3e6f.sqlite`, `.htaccess`-Sperren, Brute-Force-Rate-Limit, Cloudflare Turnstile, **SHA-256-Integritätssiegel** & **signierte Lizenz-Prüfung**.
 - **Multi-Site & verschlüsselte Core-Updates:**
   - Strikte Trennung von System (`cms/`, `api/`, `includes/`, `assets/js/`, `assets/css/`, `tools/`, `admin/`) und Inhalten (`data/`, `assets/images/`, `storage/`).
-  - **AES-256-verschlüsselte Core-Update-ZIPs** + **1-Klick-Blanko-Framework-Export** inkl. `SETUP.md`, `README.md` und `LICENSE`.
+  - **AES-256-verschlüsselte Core-Update-ZIPs** + **1-Klick-Blanko-Framework-Export** inkl. `SETUP.md`, `README.md`, `DOCUMENTATION.md` und `LICENSE`.
 
 ---
 
@@ -1134,6 +1242,7 @@ Ein schnelles, modulares **Visual-CMS & Multi-Site-Framework** ohne Build-Server
 ├── index.html               # Einstieg (Standard: /de/)
 ├── .htaccess                # Clean URLs & Schutz für storage/, includes/, tools/
 ├── SETUP.md                 # Schritt-für-Schritt-Setup (Plesk / Server / Lokal)
+├── DOCUMENTATION.md         # Vollständiges CMSS-Handbuch
 ├── LICENSE                  # Gamet Studios Source-Available License
 ├── cms/                     # Visual CMSS Oberfläche (cms.js, index.php, changelog.json)
 ├── api/                     # Backend-Endpunkte (cms.php, oidc.php, submit.php, social-feed.php)
@@ -1225,6 +1334,104 @@ This license is governed by the laws of the Federal Republic of Germany.
 
 Kontakt / Licensing Inquiries: `contact@gametstudios.media`
 LIC,
+            'DOCUMENTATION.md' => <<<'DOC'
+# Gamet Studios CMSS — Dokumentation (v1.4)
+
+Vollständiges Handbuch für Redakteure und Administratoren.  
+Für die Erstinstallation siehe [`SETUP.md`](SETUP.md) · Lizenzbedingungen siehe [`LICENSE`](LICENSE) · Kurzüberblick siehe [`README.md`](README.md).
+
+---
+
+## 1. System-Überblick
+
+Das **Gamet Studios CMSS** besteht aus zwei klar getrennten Schichten:
+1. **Systemkern (updatefähig per Core-Update):** `cms/`, `api/`, `includes/`, `assets/js/`, `assets/css/`, `tools/`, `admin/`, `.htaccess`
+2. **Deine Inhalte & Daten (bleiben bei Updates erhalten):** `data/`, `assets/images/`, `assets/icons/`, `storage/`, `de/`, `en/`
+
+---
+
+## 2. Start-Dashboard, Update-Hinweise & Command Palette
+
+### Start-Dashboard
+Direkt nach dem Login unter `/cms` landest du auf dem **Start-Dashboard** mit:
+- Schnellstatistiken (Seiten, Projekte, Mitglieder, Journal-Posts, ungelesene Postfach-Nachrichten, Medien)
+- Direktaktionen (*Seiten bearbeiten*, *Neuer Blogpost*, *Design & Marke*, *System & Backups*)
+- **Automatischer Update-Benachrichtigung:** Sobald auf `gametstudios.media` eine neuere CMSS-Version verfügbar ist, erscheint ein Hinweis-Banner mit direktem Link zum Discord (`https://dsc.gg/gametstudios`).
+
+### Siri-Style Command Palette (`Cmd + K` / `Strg + K`)
+Drücke überall im CMSS **`Cmd + K`** (Mac) bzw. **`Strg + K`** (Windows/Linux), um Aktionen per natürlicher Sprache auszuführen, z. B.:
+- *„Startseite“*, *„Journal“*, *„Medien“*, *„Postfach“*
+- *„Wartungsmodus an“* / *„Wartungsmodus aus“*
+- *„Neuer Blogpost“*, *„Bild einfügen“*, *„Handy-Vorschau“*, *„Desktop-Vorschau“*
+- *„Speichern“*
+
+---
+
+## 3. Visual Drag & Drop Page Builder
+
+Im Reiter **„Seiten“** bearbeitest du bestehende Seiten oder legst über **`+ Neue Seite anlegen`** neue Seiten (DE & EN) an.
+
+- **Direkt in der Live-Vorschau arbeiten:**
+  - Klicke auf einen Abschnitt in der Vorschau, um ihn links im Editor zu öffnen.
+  - Ziehe Abschnitte per **`⠿ Ziehen`** direkt an eine neue Position oder nutze die Toolbar (`↑`, `↓`, Duplizieren, Löschen).
+- **Bausteine-Palette:**
+  - `Spalten-Layout` (1–4 Spalten mit *Auto*-Sizing), `Textblock`, `Bild`, `Bild + Text`, `Video (YouTube/MP4)`, `Buttons`, `Zitat`, `FAQ / Accordion`, `Trenner / Abstand`, `CTA-Banner`, `Features`, `Projekte-Grid`, `Team-Grid`, `Social-Media-Feed`, `Kontaktformular`.
+  - Bausteine lassen sich **ober-/unterhalb** oder **links/rechts neben** bestehende Elemente ziehen (erweitert automatisch um eine Spalte).
+- **Übergänge & Hintergründe:** Pro Abschnitt lassen sich Überblendungen (`stage-curtain`, `glow-bridge` etc.) sowie Bild-/Video-Hintergründe inkl. Blur, Opacity und Edge-Masking konfigurieren.
+
+---
+
+## 4. Inhalte, Journal, Medien & SEO
+
+### Journal (Markdown-Blog)
+- Artikel liegen als Markdown unter `data/journal/{de,en}/`.
+- Der Editor bietet eine Markdown-Toolbar, direkten Bild-Upload in den Text und **Draft-/Zeitplan-Steuerung** (`publishAt`).
+- Beim Speichern erzeugt `tools/build.py` (falls Python 3 verfügbar) statische HTML-Blogposts samt OpenGraph-/Twitter-Karten.
+
+### Medien-Manager
+- **Chunked Uploads (`512 KB` Multipart):** Funktioniert zuverlässig auch bei großen Dateien auf Shared-Hosting.
+- **Automatische WebP-Konvertierung & Skalierung:** Hochgeladene Bilder werden automatisch optimiert (max. `1920px`).
+- **Ungenutzte Medien:** Bilder, die auf keiner Seite/Projekt/Mitglied/Journal verlinkt sind, werden mit `⚠ Ungenutzt` markiert.
+
+### SEO, Redirects, Rechtstexte & Sitemap
+- Pro Seite lassen sich **Meta-Title**, **Meta-Description** und **OpenGraph-Bild** pflegen.
+- **Redirect-Manager:** Weiterleitungen (`von` → `nach`) direkt im CMSS pflegen.
+- **Rechtstexte:** Impressum und Datenschutz können optional direkt im CMSS (`legalHtml`) bearbeitet werden.
+- **`sitemap.xml`:** Wird beim Speichern im CMSS automatisch aktualisiert.
+
+---
+
+## 5. Benutzer, Authentik SSO & Sicherheit
+
+### Rollenmodell (`Admin` vs. `Editor`)
+- **`Admin`:** Vollzugriff inklusive Design/Framework, Accounts, System-Einstellungen, Snapshots, Audit-Log und ZIP-Import/-Export.
+- **`Editor`:** Kann Seiten, Projekte, Mitglieder, Journal, Medien und Postfach bearbeiten — kein Zugriff auf System, Accounts oder Exporte.
+
+### Authentik SSO (OIDC / PKCE)
+- Unter *System / Einstellungen* konfigurierbar (`Issuer`, `Client ID`, `Client Secret`, `Admin-Gruppe`, `Editor-Gruppe`).
+- Optionaler lokaler Notfall-Login über einstellbares Flag (`oidc_allow_local_fallback`).
+
+### Betrieb & Notfall-Funktionen
+- **Automatische Snapshots:** Vor jedem Speichern und Rollback wird automatisch ein JSON-Snapshot unter `storage/snapshots/` abgelegt (letzte 15 Stände, 1-Klick-Rollback).
+- **System-Health-Check:** Prüft PHP-Version, Erweiterungen (`pdo_sqlite`, `gd`, `curl`, `zip`, `openssl`), Schreibrechte und Python-Verfügbarkeit.
+- **Audit-Log:** Protokolliert alle wichtigen Änderungen (Speichern, Uploads, Rollback, Imports) in SQLite.
+- **Wartungsmodus:** Sperrt das öffentliche Frontend mit individueller Meldung; eingeloggte Team-Mitglieder sehen die Seite normal weiter.
+
+---
+
+## 6. Core-Updates & Backups
+
+- **Komplettes Backup (`.zip`):** Sichert `data/`, `assets/images/`, `assets/icons/` und `storage/` (inkl. SQLite-DB).
+- **Core-Update (`.zip`):** Aktualisiert ausschließlich den Systemkern (`cms/`, `api/`, `includes/`, `assets/js/`, `assets/css/`, `tools/`, `admin/`, `.htaccess`). Alle Seiteninhalte und Bilder bleiben vollständig erhalten. Core-Update-ZIPs sind **AES-256-verschlüsselt** und werden vor dem Einspielen gegen Integrität und Hub-Status geprüft.
+- **Blanko-Framework-Export:** Exportiert ein sauberes Starter-Paket ohne Kundendaten (`0` Accounts → automatischer Einrichtungs-Screen beim ersten Aufruf von `/cms`).
+
+---
+
+## 7. Lizenz & Integritätsschutz
+
+Diese Software unterliegt der **Gamet Studios CMSS Source-Available License** ([`LICENSE`](LICENSE)).  
+Der Systemkern ist durch ein **SHA-256-Integritätssiegel** (`includes/integrity.php`, `GS_INTEGRITY_SEAL`) sowie eine **signierte Lizenzprüfung** (`includes/telemetry.php`) geschützt. Veränderungen am geschützten Systemkern oder Umgehungen der Schutzmechanismen führen zur automatischen Deaktivierung der Instanz.
+DOC,
         ];
         foreach ($docFiles as $docName => $docContent) {
             $zip->addFromString($docName, $docContent);

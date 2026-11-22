@@ -103,6 +103,76 @@ function get_db(): PDO
         )
     ');
 
+    // Generischer Key-Value-/Collection-Store für eigene Apps auf der Gamet Studios WARP Engine
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS app_records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            namespace TEXT NOT NULL,
+            record_key TEXT NOT NULL,
+            owner_id INTEGER,
+            data_json TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE(namespace, record_key)
+        )
+    ');
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_app_records_ns ON app_records(namespace)');
+
+    // TTL Cache für Engine & Apps
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS app_cache (
+            cache_key TEXT PRIMARY KEY,
+            value_json TEXT NOT NULL,
+            expires_at INTEGER NOT NULL
+        )
+    ');
+
+    // Deferred / Background Job Queue
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS app_jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            queue TEXT NOT NULL DEFAULT "default",
+            handler TEXT NOT NULL,
+            payload_json TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT "pending",
+            attempts INTEGER NOT NULL DEFAULT 0,
+            max_attempts INTEGER NOT NULL DEFAULT 3,
+            run_at INTEGER NOT NULL,
+            last_error TEXT NOT NULL DEFAULT "",
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+    ');
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_app_jobs_pending ON app_jobs(queue, status, run_at)');
+
+    // App-Uploads Registry
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS app_uploads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            namespace TEXT NOT NULL,
+            filename TEXT NOT NULL,
+            rel_path TEXT NOT NULL,
+            mime TEXT NOT NULL,
+            size_bytes INTEGER NOT NULL,
+            owner_id INTEGER,
+            created_at TEXT NOT NULL
+        )
+    ');
+
+    // Bearer API Tokens für Headless / App-Integrationen
+    $pdo->exec('
+        CREATE TABLE IF NOT EXISTS api_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            token_hash TEXT NOT NULL UNIQUE,
+            scopes_json TEXT NOT NULL DEFAULT "[]",
+            last_used_at TEXT,
+            expires_at TEXT,
+            created_at TEXT NOT NULL
+        )
+    ');
+
     $settingsCount = (int) $pdo->query('SELECT COUNT(*) FROM settings')->fetchColumn();
     if ($settingsCount === 0) {
         $seed = $pdo->prepare('INSERT OR IGNORE INTO settings (key, value) VALUES (:k, :v)');
