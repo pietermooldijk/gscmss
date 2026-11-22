@@ -248,6 +248,7 @@ async function loadAll() {
   state.snapshots = data.snapshots || [];
   state.auditLog = data.auditLog || [];
   state.health = data.health || [];
+  state.seoGeo = data.seoGeo || {};
   state.hasControlHub = Boolean(data.hasControlHub);
   state.users = data.users || [];
   state.systemSettings = data.systemSettings || { discord_webhook_url: '', discord_role_id: '', site_url: '' };
@@ -346,9 +347,19 @@ async function saveAll() {
     if (data.systemSettings) {
       state.systemSettings = data.systemSettings;
     }
+    if (data.seoGeo) {
+      state.seoGeo = data.seoGeo;
+    }
+    if (data.geminiSeo) {
+      state.lastGeminiStats = data.geminiSeo;
+    }
     updateSaveBtn();
     const buildMsg = data.build?.ok ? ' · build.py ✓' : '';
-    toast('✓ Gespeichert (' + data.savedAt + ')' + buildMsg);
+    const gemErrs = data.geminiSeo?.errors?.length || 0;
+    const gemMsg = gemErrs > 0
+      ? ` · ⚠ Gemini Fehler (${gemErrs})`
+      : (data.geminiSeo?.generated > 0 ? ` · Gemini SEO/GEO (${data.geminiSeo.generated} neu) ✓` : '');
+    toast('✓ Gespeichert (' + data.savedAt + ')' + buildMsg + gemMsg);
     if (state.tab === 'journal' && state.editingJournalIdx !== null && state.journal[state.editingJournalIdx]) {
       const post = state.journal[state.editingJournalIdx];
       setPreviewFrameUrl(`/de/journal/${post.slug}?cms_preview=1`);
@@ -3769,9 +3780,43 @@ function renderInboxSidebar(sidebar) {
         </div>
       </div>
 
+      <div class="cms-upload-box" style="margin-bottom:0.75rem; border-color:rgba(45,205,255,0.35);">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+          <div style="font-size:13px; font-weight:600; color:#fff;">✨ Google Gemini 3.8 Flash (Auto-SEO &amp; GEO)</div>
+          <span style="font-size:11px; color:${sys.gemini_api_key_set ? '#4ade80' : 'var(--fg-subtle)'}; font-weight:600;">
+            ${sys.gemini_api_key_set ? '✓ Key sicher hinterlegt' : '● Kein Key'}
+          </span>
+        </div>
+        <p style="font-size:12px; color:var(--fg-muted); line-height:1.5; margin:0;">
+          Generiert beim Speichern automatisch SEO-Titles, Meta-Descriptions, OpenGraph, <code>/llms.txt</code> und Schema.org-GEO-Fakten für geänderte Projekte, Journal-Posts und Seiten (strikt ohne Erfindungen).
+        </p>
+        <div class="cms-field">
+          <label>Gemini API Key</label>
+          <input
+            type="password"
+            id="cms-sys-gemini-key"
+            value=""
+            placeholder="${sys.gemini_api_key_set ? '•••••••• (Key sicher auf Server gespeichert — leer lassen zum Behalten)' : 'AIzaSy...'}"
+          />
+          <span class="hint">Wird nur serverseitig in der geschützten SQLite-DB gespeichert und niemals an Browser ausgeliefert. Key über <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a> erstellen.</span>
+        </div>
+        <button type="button" class="btn btn--secondary btn--sm" id="cms-run-gemini-btn" style="width:100%; justify-content:center;">
+          ✨ Jetzt testen &amp; SEO/GEO generieren
+        </button>
+        <div id="cms-gemini-feedback" style="font-size:11.5px; color:var(--fg-muted); margin-top:0.25rem;">
+          ${(() => {
+            const entries = Object.entries(state.seoGeo || {});
+            if (!entries.length) return 'Noch keine KI-SEO/GEO-Einträge generiert.';
+            return `<strong>${entries.length} Einträge aktiv</strong> (inkl. <code>/llms.txt</code>):<div style="max-height:140px; overflow:auto; margin-top:0.35rem; display:flex; flex-direction:column; gap:0.3rem;">` +
+              entries.slice(0, 8).map(([k, v]) => `<div style="padding:0.35rem 0.5rem; border:1px solid var(--border); border-radius:6px; background:rgba(255,255,255,0.02);"><div style="color:#fff; font-weight:600;">${esc(v.seo_title || k)}</div><div style="opacity:0.8;">${esc((v.meta_description || '').slice(0, 110))}</div></div>`).join('') +
+              `</div>`;
+          })()}
+        </div>
+      </div>
+
       <div style="display:flex; flex-direction:column; gap:0.45rem;">
         <button type="button" class="btn btn--primary btn--sm" id="cms-save-webhook-btn" style="width:100%; justify-content:center;">
-          ✓ Webhook &amp; Turnstile speichern
+          ✓ Einstellungen (Webhook, Turnstile &amp; Gemini) speichern
         </button>
         <button type="button" class="btn btn--secondary btn--sm" id="cms-test-webhook-btn" style="width:100%; justify-content:center;">
           🔔 Test-Nachricht an Discord senden
@@ -3785,9 +3830,10 @@ function renderInboxSidebar(sidebar) {
       state.systemSettings.site_url = (document.getElementById('cms-sys-site-url')?.value || '').trim();
       state.systemSettings.turnstile_site_key = (document.getElementById('cms-sys-ts-site')?.value || '').trim();
       state.systemSettings.turnstile_secret_key = (document.getElementById('cms-sys-ts-secret')?.value || '').trim();
+      state.systemSettings.gemini_api_key = (document.getElementById('cms-sys-gemini-key')?.value || '').trim();
     };
 
-    ['cms-sys-webhook-url', 'cms-sys-role-id', 'cms-sys-site-url', 'cms-sys-ts-site', 'cms-sys-ts-secret'].forEach((id) => {
+    ['cms-sys-webhook-url', 'cms-sys-role-id', 'cms-sys-site-url', 'cms-sys-ts-site', 'cms-sys-ts-secret', 'cms-sys-gemini-key'].forEach((id) => {
       document.getElementById(id)?.addEventListener('input', () => {
         syncSysInputs();
         markDirty();
@@ -3818,10 +3864,50 @@ function renderInboxSidebar(sidebar) {
       const data = await res.json();
       if (data.ok) {
         state.systemSettings = data.systemSettings || state.systemSettings;
-        toast('✓ Discord-Webhook-Einstellungen gespeichert');
+        toast('✓ Einstellungen & Gemini Key gespeichert');
+        renderInboxView();
       } else {
         toast('Fehler: ' + (data.error || 'Unbekannt'));
       }
+    });
+
+    document.getElementById('cms-run-gemini-btn')?.addEventListener('click', async () => {
+      syncSysInputs();
+      const btn = document.getElementById('cms-run-gemini-btn');
+      const fb = document.getElementById('cms-gemini-feedback');
+      if (btn) { btn.disabled = true; btn.textContent = '✨ Gemini 3.8 Flash analysiert…'; }
+      if (fb) fb.textContent = 'Anfrage an Google Gemini 3.8 Flash läuft…';
+      try {
+        const res = await fetch('/api/cms.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': state.csrf },
+          body: JSON.stringify({
+            action: 'run_gemini_seo',
+            csrf: state.csrf,
+            gemini_api_key: state.systemSettings.gemini_api_key || '',
+          }),
+        });
+        const data = await parseJsonResponse(res);
+        if (data.ok) {
+          if (data.systemSettings) state.systemSettings = data.systemSettings;
+          if (data.seoGeo) state.seoGeo = data.seoGeo;
+          const st = data.geminiSeo || {};
+          if (!st.enabled) {
+            if (fb) fb.innerHTML = '<span style="color:var(--danger);">Bitte zuerst einen gültigen Gemini API Key eintragen.</span>';
+          } else if (st.errors?.length) {
+            if (fb) fb.innerHTML = `<span style="color:var(--danger);">⚠ Gemini-Fehler: ${esc(st.errors[0])}</span>`;
+          } else {
+            toast(`✓ Gemini: ${st.generated || 0} neu, ${st.cached || 0} im Cache`);
+            renderInboxView();
+            return;
+          }
+        } else if (fb) {
+          fb.innerHTML = `<span style="color:var(--danger);">Fehler: ${esc(data.error || 'Unbekannt')}</span>`;
+        }
+      } catch (err) {
+        if (fb) fb.innerHTML = `<span style="color:var(--danger);">${esc(err?.message || 'Netzwerkfehler')}</span>`;
+      }
+      if (btn) { btn.disabled = false; btn.textContent = '✨ Jetzt testen & SEO/GEO generieren'; }
     });
 
     document.getElementById('cms-test-webhook-btn')?.addEventListener('click', async (e) => {

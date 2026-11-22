@@ -23,7 +23,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 header('X-Content-Type-Options: nosniff');
 
-define('GS_INTEGRITY_SEAL', 'c8da30b9543e39e64c08ab03704176b1745b055f3ba92719c7411325c37c7926');
+define('GS_INTEGRITY_SEAL', 'e2b2821afd3e8ec3f821d87070e197a82651d7308bc09bf223f00dd7678545bd');
 
 function current_user(): ?array
 {

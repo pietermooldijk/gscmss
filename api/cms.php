@@ -10,6 +10,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../includes/engine.php';
 require_once __DIR__ . '/../includes/discord.php';
 require_once __DIR__ . '/../includes/oidc.php';
+require_once __DIR__ . '/../includes/gemini_seo.php';
 
 $root = dirname(__DIR__);
 $pdo = get_db();
@@ -466,6 +467,8 @@ function cms_load_system_settings(): array
         'site_url'                 => get_setting('site_url', defined('SITE_URL') ? SITE_URL : ''),
         'turnstile_site_key'       => get_setting('turnstile_site_key', ''),
         'turnstile_secret_key'     => get_setting('turnstile_secret_key', ''),
+        'gemini_api_key'           => '',
+        'gemini_api_key_set'       => (trim(get_setting('gemini_api_key', '')) !== ''),
         'oidc_enabled'             => get_setting('oidc_enabled', '0'),
         'oidc_issuer'              => get_setting('oidc_issuer', ''),
         'oidc_client_id'           => get_setting('oidc_client_id', ''),
@@ -1490,6 +1493,7 @@ DOC,
         'snapshots'      => is_admin() ? cms_list_snapshots() : [],
         'auditLog'       => is_admin() ? cms_safe_get_audit_log(60) : [],
         'health'         => is_admin() ? cms_health_check() : [],
+        'seoGeo'         => is_admin() ? cms_read_json('data/seo-geo.json') : [],
         'hasControlHub'  => is_admin() && is_dir($root . '/control'),
     ]);
 }
@@ -1939,10 +1943,6 @@ if ($method === 'POST') {
         if (isset($input['membersEn']) && is_array($input['membersEn'])) {
             cms_write_json('data/en/members.json', $input['membersEn']);
         }
-        $buildResult = null;
-        if (isset($input['journal']) && is_array($input['journal'])) {
-            $buildResult = cms_save_journal_posts($input['journal']);
-        }
         if (is_admin() && isset($input['systemSettings']) && is_array($input['systemSettings'])) {
             $s = $input['systemSettings'];
             foreach (['discord_webhook_url', 'discord_role_id', 'site_url', 'turnstile_site_key', 'turnstile_secret_key'] as $sk) {
@@ -1950,9 +1950,32 @@ if ($method === 'POST') {
                     set_setting($sk, (string) $s[$sk]);
                 }
             }
+            if (!empty($s['gemini_api_key'])) {
+                set_setting('gemini_api_key', trim((string) $s['gemini_api_key']));
+            }
+        }
+
+        $curSite = is_array($input['site'] ?? null) ? $input['site'] : cms_read_json('data/site.json');
+        $curLayout = is_array($input['layout'] ?? null) ? $input['layout'] : cms_read_json('data/layout.json');
+        $curPagesDe = is_array($input['pagesDe'] ?? null) ? $input['pagesDe'] : cms_read_json('data/de/pages.json');
+        $curPagesEn = is_array($input['pagesEn'] ?? null) ? $input['pagesEn'] : cms_read_json('data/en/pages.json');
+        $curProjDe = is_array($input['projectsDe'] ?? null) ? $input['projectsDe'] : cms_read_json('data/de/projects.json');
+        $curProjEn = is_array($input['projectsEn'] ?? null) ? $input['projectsEn'] : cms_read_json('data/en/projects.json');
+        $curJournal = is_array($input['journal'] ?? null) ? $input['journal'] : cms_load_journal_posts();
+
+        $geminiStats = gs_gemini_enrich_workspace($root, $curSite, $curLayout, $curPagesDe, $curPagesEn, $curProjDe, $curProjEn, $curJournal);
+        if (!empty($geminiStats['generated']) || !empty($geminiStats['cached'])) {
+            cms_write_json('data/de/projects.json', $curProjDe);
+            cms_write_json('data/en/projects.json', $curProjEn);
+        }
+
+        $buildResult = null;
+        if (isset($input['journal']) && is_array($input['journal'])) {
+            $buildResult = cms_save_journal_posts($input['journal']);
         }
 
         $sitemapOk = cms_generate_sitemap();
+        $llmsOk = gs_generate_llms_txt($root, $curSite, $curLayout, $curProjDe, $curJournal);
         cms_safe_log_audit(current_user(), 'save_all', 'Inhalte & Konfiguration gespeichert');
 
         cms_json([
@@ -1960,6 +1983,9 @@ if ($method === 'POST') {
             'savedAt'        => date('H:i:s'),
             'build'          => $buildResult,
             'sitemap'        => $sitemapOk,
+            'llmsTxt'        => $llmsOk,
+            'geminiSeo'      => $geminiStats,
+            'seoGeo'         => cms_read_json('data/seo-geo.json'),
             'journal'        => cms_load_journal_posts(),
             'unusedImages'   => cms_find_unused_images(),
             'systemSettings' => is_admin() ? cms_load_system_settings() : [],
@@ -2116,6 +2142,7 @@ if ($method === 'POST') {
             'site_url',
             'turnstile_site_key',
             'turnstile_secret_key',
+            'gemini_api_key',
             'oidc_enabled',
             'oidc_issuer',
             'oidc_client_id',
@@ -2126,11 +2153,43 @@ if ($method === 'POST') {
         ];
         foreach ($allowedSettings as $sk) {
             if (array_key_exists($sk, $settings)) {
+                if ($sk === 'gemini_api_key' && trim((string) $settings[$sk]) === '') {
+                    continue;
+                }
                 set_setting($sk, trim((string) $settings[$sk]));
             }
         }
         cms_json([
             'ok'             => true,
+            'systemSettings' => cms_load_system_settings(),
+        ]);
+    }
+
+    if ($action === 'run_gemini_seo') {
+        cms_require_admin();
+        if (!empty($input['gemini_api_key'])) {
+            set_setting('gemini_api_key', trim((string) $input['gemini_api_key']));
+        }
+        $curSite = cms_read_json('data/site.json');
+        $curLayout = cms_read_json('data/layout.json');
+        $curPagesDe = cms_read_json('data/de/pages.json');
+        $curPagesEn = cms_read_json('data/en/pages.json');
+        $curProjDe = cms_read_json('data/de/projects.json');
+        $curProjEn = cms_read_json('data/en/projects.json');
+        $curJournal = cms_load_journal_posts();
+
+        $stats = gs_gemini_enrich_workspace($root, $curSite, $curLayout, $curPagesDe, $curPagesEn, $curProjDe, $curProjEn, $curJournal);
+        if (!empty($stats['generated'])) {
+            cms_write_json('data/de/projects.json', $curProjDe);
+            cms_write_json('data/en/projects.json', $curProjEn);
+            cms_save_journal_posts($curJournal);
+        }
+        $llmsOk = gs_generate_llms_txt($root, $curSite, $curLayout, $curProjDe, $curJournal);
+        cms_json([
+            'ok'             => true,
+            'geminiSeo'      => $stats,
+            'llmsTxt'        => $llmsOk,
+            'seoGeo'         => cms_read_json('data/seo-geo.json'),
             'systemSettings' => cms_load_system_settings(),
         ]);
     }

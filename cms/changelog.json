@@ -1,6 +1,19 @@
 {
-  "latestId": "1.4.1-hotfix",
+  "latestId": "1.4.2",
   "releases": [
+    {
+      "id": "1.4.2",
+      "version": "1.4.2",
+      "type": "update",
+      "title": "Gamet Studios CMSS v1.4.2 — Gemini Auto-SEO & GEO + WARP Engine v2.0",
+      "date": "2026-11-22",
+      "changes": [
+        "Google Gemini Auto-SEO & GEO (gemini-3.8-flash mit automatischem Fallback auf gemini-3.5-flash-lite & gemini-3.7-flash): Generiert beim Speichern automatisch SEO-Titles, Meta-Descriptions, OpenGraph, /llms.txt und Schema.org FAQPage JSON-LD für geänderte Projekte, Blogposts und Seiten.",
+        "API-Key-Sicherheit: Der Gemini API Key wird ausschließlich serverseitig in der geschützten SQLite-DB gespeichert und niemals an den Browser ausgeliefert.",
+        "WARP / Gamet Studios Engine v2.0 im Systemkern: SQLite Query-Store, TTL-Cache, Background-Job-Queue, Bearer-API-Tokens, AES-256-GCM & HMAC-Tokens sowie Frontend-SDK (engine.js).",
+        "Verstärkter Lizenz- & Integritätsschutz (15-Dateien-SHA-256-Siegel + RSA-SHA256-signierte Masterserver-Quittungen) sowie aktualisierte Dokumentation & Blanko-Framework-Exports."
+      ]
+    },
     {
       "id": "1.4.1-hotfix",
       "version": "1.4.1",

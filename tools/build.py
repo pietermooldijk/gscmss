@@ -643,6 +643,14 @@ def build_journal_pages():
     clean_journal_dir(target_dir)
     clean_journal_dir(en_target_dir)
 
+    seo_geo_path = ROOT / "data" / "seo-geo.json"
+    seo_geo_store = {}
+    if seo_geo_path.exists():
+        try:
+            seo_geo_store = json.loads(seo_geo_path.read_text(encoding="utf-8"))
+        except Exception:
+            seo_geo_store = {}
+
     for slug in slugs:
         md_path = ROOT / "data" / "journal" / "de" / f"{slug}.md"
         if not md_path.exists():
@@ -660,11 +668,12 @@ def build_journal_pages():
             if cover_credit:
                 cover_html += f'<p class="gs-journal-post__credit">{html.escape(cover_credit)}</p>'
 
+        ai_seo = seo_geo_store.get(f"journal:de:{slug}", {}) if isinstance(seo_geo_store, dict) else {}
         cfg = {
-            "title": f"{title} - Gamet Studios Journal",
-            "description": excerpt or meta.get("title", ""),
-            "og_title": title,
-            "og_description": excerpt or meta.get("title", ""),
+            "title": ai_seo.get("seo_title") or f"{title} - Gamet Studios Journal",
+            "description": ai_seo.get("meta_description") or excerpt or meta.get("title", ""),
+            "og_title": ai_seo.get("og_title") or title,
+            "og_description": ai_seo.get("og_description") or excerpt or meta.get("title", ""),
             "locale": "de_DE",
             "url": f"/de/journal/{slug}",
         }
@@ -674,6 +683,21 @@ def build_journal_pages():
             image_alt=title,
             og_type="article",
         )
+        faq_items = ai_seo.get("geo_faq") or []
+        faq_ld = ""
+        if isinstance(faq_items, list) and faq_items:
+            faq_ld = '\n  <script type="application/ld+json">\n' + json.dumps({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": f.get("q", ""),
+                        "acceptedAnswer": {"@type": "Answer", "text": f.get("a", "")},
+                    }
+                    for f in faq_items if isinstance(f, dict) and f.get("q") and f.get("a")
+                ],
+            }, indent=2, ensure_ascii=False) + "\n  </script>"
 
         html_doc = f"""<!doctype html>
 <html lang="de" data-theme="light">
@@ -710,14 +734,16 @@ def build_journal_pages():
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": title,
-    "description": excerpt,
+    "description": cfg["description"],
+    "abstract": ai_seo.get("geo_summary") or excerpt,
+    "keywords": ", ".join(ai_seo.get("keywords") or []),
     "author": {"@type": "Person", "name": meta.get("author", SITE_NAME)},
     "datePublished": meta.get("date", ""),
     "image": absolute_url(cover) if cover else absolute_url(OG_IMAGE),
     "url": absolute_url(f"/de/journal/{slug}"),
     "publisher": {"@type": "Organization", "name": SITE_NAME},
 }, indent=2, ensure_ascii=False)}
-  </script>
+  </script>{faq_ld}
   <noscript>
     <article class="container-narrow" style="padding-block:6rem;">
       <h1>{html.escape(title)}</h1>
